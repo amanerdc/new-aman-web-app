@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, Building2, Calculator, Home, CheckCircle2 } from "lucide-react"
+import { ArrowRight, Building2, Calculator, Home, CheckCircle2, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { modelHouseSeries } from "@/lib/data"
@@ -20,11 +20,10 @@ export default function HomePage() {
                 Parkview Naga Urban Residence
               </div>
               <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl text-balance">
-                Build Your Dream Home with <span className="text-primary">Aman Group</span>
+                Building Dreams, Creating Communities
               </h1>
               <p className="text-lg text-muted-foreground max-w-xl text-pretty">
-                Discover quality homes designed for Filipino families. From compact starter homes to spacious family
-                residences, we have the perfect property for you.
+                Quality homes and sustainable communities for Bicolano families since 1989
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button asChild size="lg" className="gap-2">
@@ -34,9 +33,9 @@ export default function HomePage() {
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="gap-2 bg-transparent">
-                  <Link href="/calculator">
-                    <Calculator className="h-5 w-5" />
-                    Calculate Loan
+                  <Link href="/developers">
+                    <Users className="h-5 w-5" />
+                    Our Developers
                   </Link>
                 </Button>
               </div>

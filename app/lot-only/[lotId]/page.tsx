@@ -58,7 +58,8 @@ export default async function LotDetailPage({
 
   return (
     <div className="py-8">
-      <div className="container max-w-6xl">
+      {/* Hero Section */}
+      <div className="container max-w-6xl mx-auto">
         {/* Back Button */}
         <Button asChild variant="ghost" className="mb-6 -ml-2">
           <Link href="/lot-only" className="gap-2">
@@ -145,7 +146,7 @@ export default async function LotDetailPage({
         </div>
 
         {/* Features and Utilities */}
-        <div className="grid gap-6 lg:grid-cols-2 mb-8">
+        <div className="grid gap-6 lg:grid-cols-2 mb-8 justify-center">
           {/* Features */}
           <Card>
             <CardHeader>

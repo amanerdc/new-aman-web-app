@@ -63,7 +63,7 @@ export default async function UnitDetailPage({
 
   return (
     <div className="py-8">
-      <div className="container max-w-6xl">
+      <div className="container max-w-6xl mx-auto">
         {/* Back Button */}
         <Button asChild variant="ghost" className="mb-6 -ml-2">
           <Link href={`/properties/${seriesId}`} className="gap-2">
@@ -163,7 +163,7 @@ export default async function UnitDetailPage({
         </div>
 
         {/* Features and Specifications */}
-        <div className="grid gap-6 lg:grid-cols-2 mb-8">
+        <div className="grid gap-6 lg:grid-cols-2 mb-8 justify-center">
           {/* Features */}
           <Card>
             <CardHeader>

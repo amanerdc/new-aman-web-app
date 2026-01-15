@@ -73,60 +73,63 @@ export function BookViewingForm({ propertyName, agentName }: BookViewingFormProp
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>Select Preferred Date</Label>
-            <CalendarComponent
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              disabled={(date) => date < new Date()}
-              className="rounded-md border mx-auto"
-            />
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Left column - Calendar */}
             <div className="space-y-2">
-              <Label htmlFor="booking-name">
-                <User className="h-3 w-3 inline mr-1" />
-                Name *
-              </Label>
-              <Input
-                id="booking-name"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Your full name"
+              <Label>Select Preferred Date</Label>
+              <CalendarComponent
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                disabled={(date) => date < new Date()}
+                className="rounded-md border"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="booking-email">
-                <Mail className="h-3 w-3 inline mr-1" />
-                Email *
-              </Label>
-              <Input
-                id="booking-email"
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="your@email.com"
-              />
-            </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="booking-phone">
-              <Phone className="h-3 w-3 inline mr-1" />
-              Phone *
-            </Label>
-            <Input
-              id="booking-phone"
-              type="tel"
-              required
-              value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              placeholder="09XX XXX XXXX"
-            />
+            {/* Right column - Name, Email, Phone */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="booking-name">
+                  <User className="h-3 w-3 inline mr-1" />
+                  Name *
+                </Label>
+                <Input
+                  id="booking-name"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Your full name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="booking-email">
+                  <Mail className="h-3 w-3 inline mr-1" />
+                  Email *
+                </Label>
+                <Input
+                  id="booking-email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  placeholder="your@email.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="booking-phone">
+                  <Phone className="h-3 w-3 inline mr-1" />
+                  Phone *
+                </Label>
+                <Input
+                  id="booking-phone"
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="09XX XXX XXXX"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">
