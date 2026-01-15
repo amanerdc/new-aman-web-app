@@ -1,0 +1,92 @@
+import Link from "next/link"
+import Image from "next/image"
+import { Building2 } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { modelHouseSeries } from "@/lib/data"
+import { AgentTools } from "@/components/agent-tools"
+
+export const metadata = {
+  title: "Model Houses | Aman Group of Companies",
+  description: "Browse our selection of quality model houses in Parkview Naga Urban Residence",
+}
+
+export default function PropertiesPage() {
+  const allSeries = Object.values(modelHouseSeries)
+
+  return (
+    <div className="py-12">
+      <div className="container">
+        {/* Header */}
+        <div className="mb-12">
+          <div className="flex items-center gap-2 text-primary mb-4">
+            <Building2 className="h-5 w-5" />
+            <span className="text-sm font-medium">Model Houses</span>
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight mb-4">Explore Our Model House Series</h1>
+          <p className="text-lg text-muted-foreground max-w-3xl">
+            Each series offers different configurations and packages to suit your needs and budget. Click on a series to
+            view available units and specifications.
+          </p>
+        </div>
+
+        {/* Series Grid */}
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {allSeries.map((series) => (
+            <Link key={series.id} href={`/properties/${series.id}`} className="group">
+              <Card className="overflow-hidden h-full border-border/50 transition-all hover:border-primary/50 hover:shadow-xl">
+                <div className="aspect-[16/10] overflow-hidden relative">
+                  <Image
+                    src={series.imageUrl || "/placeholder.svg"}
+                    alt={series.name}
+                    width={600}
+                    height={375}
+                    className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                  />
+                  <div className="absolute top-3 left-3 flex gap-2">
+                    <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
+                      {series.floorArea}
+                    </Badge>
+                    {series.loftReady && <Badge className="bg-primary/90 backdrop-blur-sm">Loft Ready</Badge>}
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{series.name}</h2>
+                  <p className="text-muted-foreground mb-4 line-clamp-2">{series.description}</p>
+
+                  {/* Features Preview */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {series.features.slice(0, 3).map((feature, index) => (
+                      <span key={index} className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">
+                        {feature}
+                      </span>
+                    ))}
+                    {series.features.length > 3 && (
+                      <span className="text-xs text-muted-foreground px-2 py-1">
+                        +{series.features.length - 3} more
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Price and Units */}
+                  <div className="flex items-end justify-between pt-4 border-t border-border">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Base Price</p>
+                      <p className="text-2xl font-bold text-primary">₱{series.basePrice.toLocaleString()}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-muted-foreground">Available</p>
+                      <p className="font-semibold">{series.units.length} Units</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+
+        <AgentTools currentPath="/properties" />
+      </div>
+    </div>
+  )
+}
