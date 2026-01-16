@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,41 +15,40 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+    // Email content
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">New Contact Form Submission</h2>
+        <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Phone:</strong> ${phone}</p>
+          <p><strong>Project Location:</strong> ${projectLocation}</p>
+          ${propertyInterest ? `<p><strong>Property Interest:</strong> ${propertyInterest}</p>` : ''}
+          ${message ? `<p><strong>Message:</strong></p><p>${message.replace(/\n/g, '<br>')}</p>` : ''}
+          ${referredBy ? `<p><strong>Referred By:</strong> ${referredBy}</p>` : ''}
+        </div>
+        <p style="color: #666; font-size: 12px;">
+          This email was sent from the contact form on your website.
+        </p>
+      </div>
+    `
+
+    // Send email using Resend
+    const { data, error } = await resend.emails.send({
+      from: 'Contact Form <onboarding@resend.dev>', // Use your verified domain
+      to: process.env.RECIPIENT_EMAIL || 'bahayahay.ph@gmail.com',
+      subject: `New Contact Form Submission from ${name}`,
+      html: emailHtml,
     })
 
-    // Email content
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.RECIPIENT_EMAIL || 'frontdesk@enjoyrealty.com',
-      subject: `New Contact Form Submission from ${name}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #333;">New Contact Form Submission</h2>
-          <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Name:</strong> ${name}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Phone:</strong> ${phone}</p>
-            <p><strong>Project Location:</strong> ${projectLocation}</p>
-            ${propertyInterest ? `<p><strong>Property Interest:</strong> ${propertyInterest}</p>` : ''}
-            ${message ? `<p><strong>Message:</strong></p><p>${message.replace(/\n/g, '<br>')}</p>` : ''}
-            ${referredBy ? `<p><strong>Referred By:</strong> ${referredBy}</p>` : ''}
-          </div>
-          <p style="color: #666; font-size: 12px;">
-            This email was sent from the contact form on your website.
-          </p>
-        </div>
-      `
+    if (error) {
+      console.error('Resend error:', error)
+      return NextResponse.json(
+        { error: 'Failed to send email' },
+        { status: 500 }
+      )
     }
-
-    // Send email
-    await transporter.sendMail(mailOptions)
 
     return NextResponse.json(
       { message: 'Email sent successfully' },
