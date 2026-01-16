@@ -140,7 +140,7 @@ export const modelHouseSeries: Record<string, ModelHouseSeries> = {
         houseConstructionPrice: 2488000,
         location: "Parkview Naga Urban Residence, Zone 7, Brgy. San Felipe, Naga City",
         status: "Available",
-        isRFO: false,
+        isRFO: true,
         features: [
           "Standard fixtures and finishes",
           "Basic kitchen cabinets",
