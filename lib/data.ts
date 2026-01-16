@@ -37,7 +37,7 @@ export type Unit = {
   floorPlanImage: string
   imageUrl: string
   floorPlanPdfId: string
-  walkthrough: string
+  walkthrough: string | null
   lotArea?: string
   reservationFee?: number
   financingOptions?: string
@@ -153,7 +153,7 @@ export const modelHouseSeries: Record<string, ModelHouseSeries> = {
         imageUrl:
           "https://8ybl2ah7tkcii6tt.public.blob.vercel-storage.com/Model_houses_images/Jill/Jill-DL0nFXnfesSdO9P5SZTrr6wLdudfCL.png",
         floorPlanPdfId: "1uFq1-LSFvJCJhcvq38l7ct3LhSMVwfjm",
-        walkthrough: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        walkthrough: null,
       },
       {
         id: "jill-108-complete",
@@ -177,7 +177,7 @@ export const modelHouseSeries: Record<string, ModelHouseSeries> = {
         imageUrl:
           "https://8ybl2ah7tkcii6tt.public.blob.vercel-storage.com/Model_houses_images/Jill/Jill-DL0nFXnfesSdO9P5SZTrr6wLdudfCL.png",
         floorPlanPdfId: "1uFq1-LSFvJCJhcvq38l7ct3LhSMVwfjm",
-        walkthrough: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        walkthrough: null,
       },
     ],
   },
@@ -510,7 +510,7 @@ export const modelHouseSeries: Record<string, ModelHouseSeries> = {
         houseConstructionPrice: 1058000,
         location: "Parkview Naga Urban Residence, Blk. 10, Lot 27",
         status: "Fully Constructed",
-        isRFO: true,
+        isRFO: false,
         features: [
           "Solid concrete floating foundation",
           "Solid concrete walls with industrial finish",

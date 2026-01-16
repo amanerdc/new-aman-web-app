@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { lotOnlyProperties } from "@/lib/lot-only-data"
-import { AgentTools } from "@/components/agent-tools"
 
 export const metadata = {
   title: "Lot Only Properties | Aman Group of Companies",
@@ -14,7 +13,7 @@ export const metadata = {
 
 export default function LotOnlyPage() {
   return (
-    <div className="py-8">
+    <div className="p-12">
       <div className="container">
         {/* Breadcrumb */}
         <div className="flex items-center text-sm mb-8">
@@ -88,7 +87,6 @@ export default function LotOnlyPage() {
           ))}
         </div>
 
-        <AgentTools currentPath="/lot-only" />
       </div>
     </div>
   )

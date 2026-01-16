@@ -102,37 +102,44 @@ export default async function LotDetailPage({
 
             <Separator />
 
-            {/* Pricing Details */}
+            {/* Property Details */}
             <div className="space-y-4">
               <h3 className="font-semibold">Property Details</h3>
+
               <div className="grid gap-3">
-                <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                  <span className="text-muted-foreground">Lot Area</span>
-                  <span className="font-semibold">{lot.lotArea}</span>
+
+                {/* Lot Area + Zoning */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                    <span className="text-muted-foreground">Lot Area</span>
+                    <span className="font-semibold">{lot.lotArea}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
+                    <span className="text-muted-foreground">Zoning</span>
+                    <span className="font-semibold">{lot.zoning}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                  <span className="text-muted-foreground">Zoning</span>
-                  <span className="font-semibold">{lot.zoning}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
+
+                {/* Reservation Fee */}
+                <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
                   <span className="text-muted-foreground">Reservation Fee</span>
-                  <span className="font-semibold">₱{lot.reservationFee.toLocaleString()}</span>
+                  <span className="font-semibold">
+                    ₱{lot.reservationFee.toLocaleString()}
+                  </span>
                 </div>
+
+                {/* Total Price */}
                 <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border border-primary/20">
                   <span className="font-medium">Total Price</span>
-                  <span className="text-2xl font-bold text-primary">₱{lot.price.toLocaleString()}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    ₱{lot.price.toLocaleString()}
+                  </span>
                 </div>
+
               </div>
             </div>
 
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">
-                <strong>Financing:</strong> {lot.financingOptions}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                <strong>Down Payment:</strong> {lot.downPaymentPercentage}% ({lot.downPaymentTerms})
-              </p>
-            </div>
 
             <Button asChild size="lg" className="w-full gap-2">
               <Link
@@ -144,6 +151,31 @@ export default async function LotDetailPage({
             </Button>
           </div>
         </div>
+
+        {/* Project Info */}
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Project</p>
+                <p className="font-semibold">{lot.project}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Developer</p>
+                <p className="font-semibold" style={{ color: lot.developerColor }}>
+                  {lot.developer}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Property Type</p>
+                <p className="font-semibold">{lot.propertyType}</p>
+              </div>
+              <Button variant="outline" asChild>
+                <Link href="/contact">Inquire Now</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Features and Utilities */}
         <div className="grid gap-6 lg:grid-cols-2 mb-8 justify-center">
@@ -203,31 +235,6 @@ export default async function LotDetailPage({
         <div className="mb-8">
           <BookViewingForm propertyName={lot.name} agentName={agent?.name} />
         </div>
-
-        {/* Project Info */}
-        <Card className="mb-8">
-          <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Project</p>
-                <p className="font-semibold">{lot.project}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Developer</p>
-                <p className="font-semibold" style={{ color: lot.developerColor }}>
-                  {lot.developer}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Property Type</p>
-                <p className="font-semibold">{lot.propertyType}</p>
-              </div>
-              <Button asChild>
-                <Link href="/contact">Inquire Now</Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         <AgentTools currentPath={`/lot-only/${lot.id}`} />
       </div>

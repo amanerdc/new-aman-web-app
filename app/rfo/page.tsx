@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { modelHouseSeries, type Unit, type ModelHouseSeries } from "@/lib/data"
-import { AgentTools } from "@/components/agent-tools"
 
 export const metadata = {
   title: "Ready for Occupancy Units | Aman Group of Companies",
@@ -33,7 +32,7 @@ export default function RFOPage() {
   const rfoUnits = getRFOUnits()
 
   return (
-    <div className="py-8">
+    <div className="p-12">
       <div className="container">
         {/* Back Button */}
         <Button asChild variant="ghost" className="mb-6 -ml-2">
@@ -47,7 +46,7 @@ export default function RFOPage() {
         <div className="grid gap-8 lg:grid-cols-2 mb-12">
           <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
             <Image
-              src="/jasmine-45-basic-loft-garage.jpg"
+              src="NUR_photo.jpg"
               alt="Ready for Occupancy Units"
               width={800}
               height={600}
@@ -61,10 +60,6 @@ export default function RFOPage() {
                 <Badge>Move-in Ready</Badge>
               </div>
               <h1 className="text-3xl font-bold tracking-tight mb-2">Ready for Occupancy Units</h1>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>Parkview Naga Urban Residence</span>
-              </div>
             </div>
 
             <p className="text-muted-foreground">
@@ -215,7 +210,6 @@ export default function RFOPage() {
           </TabsContent>
         </Tabs>
 
-        <AgentTools currentPath="/rfo" />
       </div>
     </div>
   )

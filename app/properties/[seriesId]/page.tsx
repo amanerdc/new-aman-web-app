@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { modelHouseSeries } from "@/lib/data"
-import { AgentTools } from "@/components/agent-tools"
 
 export async function generateStaticParams() {
   return Object.keys(modelHouseSeries).map((seriesId) => ({
@@ -34,7 +33,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
   }
 
   return (
-    <div className="py-8">
+    <div className="p-12">
       <div className="container">
         {/* Back Button */}
         <Button asChild variant="ghost" className="mb-6 -ml-2">
@@ -93,7 +92,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
         {/* Tabs for Specifications and Units */}
         <Tabs defaultValue="units" className="space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="units">Available Units</TabsTrigger>
+            <TabsTrigger value="units">Series Units</TabsTrigger>
             <TabsTrigger value="specifications">Specifications</TabsTrigger>
           </TabsList>
 
@@ -110,12 +109,6 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                       className="h-full w-full object-cover"
                     />
                     <div className="absolute top-3 left-3">
-                      <Badge
-                        variant={unit.status === "Available" ? "default" : "secondary"}
-                        className={unit.status === "Available" ? "bg-primary" : ""}
-                      >
-                        {unit.status}
-                      </Badge>
                     </div>
                     {unit.isRFO && (
                       <div className="absolute top-3 right-3">
@@ -183,7 +176,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
           </TabsContent>
         </Tabs>
 
-        <AgentTools currentPath={`/properties/${seriesId}`} />
+
       </div>
     </div>
   )

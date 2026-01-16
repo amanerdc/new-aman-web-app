@@ -85,37 +85,11 @@ export default async function UnitDetailPage({
                 priority
               />
             </div>
-            {/* Floor Plan */}
-            {unit.floorPlanPdfId && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Floor Plan</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild variant="outline" className="w-full gap-2 bg-transparent">
-                    <a
-                      href={`https://drive.google.com/file/d/${unit.floorPlanPdfId}/view`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      View Floor Plan PDF
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           <div className="space-y-6">
             <div>
-              <div className="flex items-center gap-2 mb-3 flex-wrap">
-                <Badge
-                  variant={unit.status === "Available" ? "default" : "secondary"}
-                  className={unit.status === "Available" ? "bg-primary" : ""}
-                >
-                  {unit.status}
-                </Badge>
+              <div className="flex items-center gap-2 mb-3 flex-wrap"> 
                 {unit.isRFO && <Badge variant="outline">Ready for Occupancy</Badge>}
                 {series.loftReady && <Badge variant="outline">Loft Ready</Badge>}
               </div>
@@ -161,6 +135,29 @@ export default async function UnitDetailPage({
             </Button>
           </div>
         </div>
+
+        {/* Project Info */}
+        <Card className="space-y-1 mb-8">
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Project</p>
+                <p className="font-semibold">{series.project}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Developer</p>
+                <p className="font-semibold">{series.developer}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Floor Area</p>
+                <p className="font-semibold">{series.floorArea}</p>
+              </div>
+              <Button variant="outline" asChild>
+                <Link href="/contact">Inquire Now</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Features and Specifications */}
         <div className="grid gap-6 lg:grid-cols-2 mb-8 justify-center">
@@ -208,16 +205,39 @@ export default async function UnitDetailPage({
           <BookViewingForm propertyName={`${unit.seriesName} - ${unit.name}`} agentName={agent?.name} />
         </div>
 
+        <div className="space-y-1 mb-8">
+            {/* Floor Plan */}
+            {unit.floorPlanPdfId && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Floor Plan</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Button asChild variant="outline" className="w-full gap-2 bg-transparent">
+                    <a
+                      href={`https://drive.google.com/file/d/${unit.floorPlanPdfId}/view`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      View Floor Plan PDF
+                    </a>
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+        </div>
+
         {/* Video Walkthrough */}
-        {unit.walkthrough && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Play className="h-5 w-5" />
-                Video Walkthrough
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Play className="h-5 w-5" />
+              Video Walkthrough
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {unit.walkthrough ? (
               <div className="aspect-video rounded-lg overflow-hidden">
                 <iframe
                   src={unit.walkthrough}
@@ -227,30 +247,11 @@ export default async function UnitDetailPage({
                   allowFullScreen
                 />
               </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Project Info */}
-        <Card className="mb-8">
-          <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Project</p>
-                <p className="font-semibold">{series.project}</p>
+            ) : (
+              <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                <p className="text-gray-500 text-lg">No available video</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Developer</p>
-                <p className="font-semibold">{series.developer}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Floor Area</p>
-                <p className="font-semibold">{series.floorArea}</p>
-              </div>
-              <Button asChild>
-                <Link href="/contact">Inquire Now</Link>
-              </Button>
-            </div>
+            )}
           </CardContent>
         </Card>
 

@@ -31,20 +31,32 @@ export function BookViewingForm({ propertyName, agentName }: BookViewingFormProp
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const response = await fetch('/api/book-viewing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          preferredDate: date,
+          propertyName,
+          referredBy: agentName,
+        }),
+      })
 
-    // In production, you would send this to an API
-    console.log("Booking submitted:", {
-      ...formData,
-      preferredDate: date,
-      propertyName,
-      referredBy: agentName,
-      sentTo: "frontdesk@enjoyrealty.com",
-    })
-
-    setSubmitted(true)
-    setIsSubmitting(false)
+      if (response.ok) {
+        setSubmitted(true)
+      } else {
+        const error = await response.json()
+        alert(`Failed to submit booking request: ${error.error}`)
+      }
+    } catch (error) {
+      console.error('Error submitting booking form:', error)
+      alert('Failed to submit booking request. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (submitted) {
@@ -72,95 +84,112 @@ export function BookViewingForm({ propertyName, agentName }: BookViewingFormProp
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-6 lg:grid-cols-2">
-            {/* Left column - Calendar */}
-            <div className="space-y-2">
-              <Label>Select Preferred Date</Label>
-              <CalendarComponent
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                disabled={(date) => date < new Date()}
-                className="rounded-md border"
-              />
-            </div>
+<form onSubmit={handleSubmit}>
+  <div className="grid gap-6 lg:grid-cols-2 items-stretch">
+    {/* Left column - Calendar */}
+<div className="space-y-2 w-full">
+  <Label>Select Preferred Date</Label>
+  <CalendarComponent
+    mode="single"
+    selected={date}
+    onSelect={setDate}
+    disabled={(date) => date < new Date()}
+    className="w-full rounded-md border"
+  />
+</div>
 
-            {/* Right column - Name, Email, Phone */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="booking-name">
-                  <User className="h-3 w-3 inline mr-1" />
-                  Name *
-                </Label>
-                <Input
-                  id="booking-name"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Your full name"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="booking-email">
-                  <Mail className="h-3 w-3 inline mr-1" />
-                  Email *
-                </Label>
-                <Input
-                  id="booking-email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="your@email.com"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="booking-phone">
-                  <Phone className="h-3 w-3 inline mr-1" />
-                  Phone *
-                </Label>
-                <Input
-                  id="booking-phone"
-                  type="tel"
-                  required
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="09XX XXX XXXX"
-                />
-              </div>
-            </div>
-          </div>
+{/* Right column - All form fields */}
+<div className="space-y-4 flex flex-col mt-5s">
+  <div className="space-y-2">
+    <Label htmlFor="booking-name">
+      <User className="h-3 w-3 inline mr-1" />
+      Name *
+    </Label>
+    <Input
+      id="booking-name"
+      required
+      value={formData.name}
+      onChange={(e) =>
+        setFormData({ ...formData, name: e.target.value })
+      }
+      placeholder="Your full name"
+    />
+  </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="booking-message">
-              <MessageSquare className="h-3 w-3 inline mr-1" />
-              Message *
-            </Label>
-            <Textarea
-              id="booking-message"
-              required
-              value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              placeholder="Let us know your preferred schedule"
-              rows={3}
-            />
-          </div>
+  <div className="space-y-2">
+    <Label htmlFor="booking-email">
+      <Mail className="h-3 w-3 inline mr-1" />
+      Email *
+    </Label>
+    <Input
+      id="booking-email"
+      type="email"
+      required
+      value={formData.email}
+      onChange={(e) =>
+        setFormData({ ...formData, email: e.target.value })
+      }
+      placeholder="your@email.com"
+    />
+  </div>
 
-          {agentName && (
-            <div className="p-3 bg-primary/10 rounded-lg">
-              <p className="text-sm">
-                <User className="h-3 w-3 inline mr-1" />
-                Referred by: <strong>{agentName}</strong>
-              </p>
-            </div>
-          )}
+  <div className="space-y-2">
+    <Label htmlFor="booking-phone">
+      <Phone className="h-3 w-3 inline mr-1" />
+      Phone *
+    </Label>
+    <Input
+      id="booking-phone"
+      type="tel"
+      required
+      value={formData.phone}
+      onChange={(e) =>
+        setFormData({ ...formData, phone: e.target.value })
+      }
+      placeholder="09XX XXX XXXX"
+    />
+  </div>
 
-          <Button type="submit" className="w-full" disabled={isSubmitting || !date}>
-            <Send className="h-4 w-4 mr-2" />
-            {isSubmitting ? "Submitting..." : "Submit Booking Request"}
-          </Button>
-        </form>
+  <div className="space-y-2">
+    <Label htmlFor="booking-message">
+      <MessageSquare className="h-3 w-3 inline mr-1" />
+      Message *
+    </Label>
+    <Textarea
+      id="booking-message"
+      required
+      value={formData.message}
+      onChange={(e) =>
+        setFormData({ ...formData, message: e.target.value })
+      }
+      placeholder="Let us know your preferred schedule"
+      rows={3}
+    />
+  </div>
+
+  {agentName && (
+    <div className="p-3 bg-primary/10 rounded-lg">
+      <p className="text-sm">
+        <User className="h-3 w-3 inline mr-1" />
+        Referred by: <strong>{agentName}</strong>
+      </p>
+    </div>
+  )}
+
+  {/* Submit button directly under last element */}
+  <Button
+    type="submit"
+    className="w-full"
+    disabled={isSubmitting || !date}
+  >
+    <Send className="h-4 w-4 mr-2" />
+    {isSubmitting ? "Submitting..." : "Submit Booking Request"}
+  </Button>
+</div>
+
+  </div>
+</form>
+
       </CardContent>
     </Card>
   )

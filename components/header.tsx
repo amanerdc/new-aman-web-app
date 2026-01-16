@@ -13,24 +13,31 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-            <Building2 className="h-6 w-6 text-primary-foreground" />
+        <Link href="/" className="flex items-center gap-2 ml-4">
+          <div className="flex items-center justify-center bg-primary text-primary-foreground font-bold text-xl rounded-md h-10 w-10">
+              A
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold leading-tight text-foreground">Aman Group</span>
-            <span className="text-xs text-muted-foreground">of Companies</span>
+            <span className="text-lg font-bold leading-tight text-foreground">Aman Group of Companies</span>
           </div>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-6 mr-4">
           <Link
             href="/"
             className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
           >
             <Home className="h-4 w-4" />
             Home
+          </Link>
+
+          <Link
+            href="/developers"
+            className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+          >
+            <Users className="h-4 w-4" />
+            Our Developers
           </Link>
 
           <DropdownMenu>
@@ -42,7 +49,7 @@ export function Header() {
             <DropdownMenuContent>
               <DropdownMenuItem asChild>
                 <Link href="/properties" className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4" />
+                  <Home className="h-4 w-4" />
                   Model Houses
                 </Link>
               </DropdownMenuItem>
@@ -60,14 +67,6 @@ export function Header() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <Link
-            href="/developers"
-            className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-          >
-            <Users className="h-4 w-4" />
-            Our Developers
-          </Link>
 
           <Link
             href="/calculator"

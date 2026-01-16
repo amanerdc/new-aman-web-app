@@ -12,7 +12,7 @@ export const metadata = {
 
 export default function DevelopersPage() {
   return (
-    <div className="py-8">
+    <div className="p-12">
       {/* Enjoy Realty Section */}
       <section className="container mx-auto px-4 py-12">
         {/* Breadcrumb */}
@@ -50,11 +50,11 @@ export default function DevelopersPage() {
         </div>
 
         {/* Enjoy Realty Projects */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold mb-8 text-[#65932D]">Our Projects</h2>
+        <div className="mb-10">
+          <h2 className="text-3xl font-bold mb-4 text-[#65932D]">Our Projects</h2>
 
           <Tabs defaultValue={enjoyRealtyProjects[0]?.id || ""} className="w-full">
-            <TabsList className="flex w-full rounded-lg p-1 bg-gray-100/80 mb-6 lg:mb-8 overflow-x-auto gap-1">
+            <TabsList className="flex w-full rounded-lg p-1 bg-gray-100/80 mb-4 lg:mb-4 overflow-x-auto gap-1">
               {enjoyRealtyProjects.map((project) => (
                 <TabsTrigger
                   key={project.id}
@@ -133,7 +133,7 @@ export default function DevelopersPage() {
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
                 Aman Engineering Enterprise
               </h1>
-              <p className="text-white/90 text-base md:text-lg mb-4 md:mb-6">Parkview Naga Urban Residence</p>
+              <p className="text-white/90 text-base md:text-lg mb-4 md:mb-6">Parkview Naga Urban Residences</p>
             </div>
           </div>
         </div>
@@ -143,7 +143,7 @@ export default function DevelopersPage() {
           <h2 className="text-3xl font-bold mb-8 text-[#04009D]">Our Project</h2>
 
           <Tabs defaultValue={amanProjects[0]?.id || ""} className="w-full">
-            <TabsList className="flex w-full rounded-lg p-1 bg-gray-100/80 mb-6 md:mb-8 overflow-x-auto">
+            <TabsList className="flex w-full rounded-lg p-1 bg-gray-100/80 mb-4 md:mb-4 overflow-x-auto">
               {amanProjects.map((project) => (
                 <TabsTrigger
                   key={project.id}

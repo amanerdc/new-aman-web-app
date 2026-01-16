@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { Home, Send, MapPin, Phone, Mail, Clock, User, Building2, MessageSquare } from "lucide-react"
+import { Home, Send, MapPin, Phone, Mail, Clock, User, Building2, MessageSquare, NotebookTabs } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -35,23 +35,36 @@ export default function ContactPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          referredBy: agent?.name,
+        }),
+      })
 
-    console.log("Contact form submitted:", {
-      ...formData,
-      referredBy: agent?.name,
-      sentTo: "frontdesk@enjoyrealty.com",
-    })
-
-    setSubmitted(true)
-    setIsSubmitting(false)
+      if (response.ok) {
+        setSubmitted(true)
+      } else {
+        const error = await response.json()
+        alert(`Failed to send message: ${error.error}`)
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error)
+      alert('Failed to send message. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (submitted) {
     return (
-      <div className="py-8">
-        <div className="container max-w-2xl text-center py-12">
+      <div className="p-12">
+        <div className="container max-w-2xl mx-auto text-center py-12">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <Send className="h-8 w-8 text-primary" />
           </div>
@@ -68,7 +81,7 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="py-8">
+    <div className="p-12">
       <div className="container">
         {/* Breadcrumb */}
         <div className="flex items-center text-sm mb-8">
@@ -142,7 +155,7 @@ export default function ContactPage() {
                     />
                   </div>
                 </div>
-
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="project-location">
                     <MapPin className="h-3 w-3 inline mr-1" />
@@ -153,7 +166,7 @@ export default function ContactPage() {
                     onValueChange={(value) => setFormData({ ...formData, projectLocation: value })}
                     required
                   >
-                    <SelectTrigger id="project-location">
+                    <SelectTrigger id="project-location" className="w-full h-11">
                       <SelectValue placeholder="Select project location" />
                     </SelectTrigger>
                     <SelectContent>
@@ -172,7 +185,7 @@ export default function ContactPage() {
                     value={formData.propertyInterest}
                     onValueChange={(value) => setFormData({ ...formData, propertyInterest: value })}
                   >
-                    <SelectTrigger id="property-interest">
+                    <SelectTrigger id="property-interest" className="w-full h-11">
                       <SelectValue placeholder="Select property interest" />
                     </SelectTrigger>
                     <SelectContent>
@@ -183,6 +196,7 @@ export default function ContactPage() {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="message">Message</Label>
@@ -217,7 +231,7 @@ export default function ContactPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
+                  <NotebookTabs className="h-5 w-5" />
                   Contact Information
                 </CardTitle>
               </CardHeader>
@@ -269,7 +283,11 @@ export default function ContactPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        </div>
+        
 
+<div className="mt-12 max-w-6xl mx-auto mb-8">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -277,10 +295,10 @@ export default function ContactPage() {
                   Location Map
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="aspect-video rounded-lg overflow-hidden">
+              <CardContent className="p-0 mb-8">
+                <div className="aspect-video w-full">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.1234567890123!2d123.456789!3d13.123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sAMAN+CORPORATE+CENTER!5e0!3m2!1sen!2sph!4v1234567890"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1938.6120689415682!2d123.20621644417818!3d13.644125367180653!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a1f323b02da27d%3A0xc0e5b304d52de86b!2sAMAN%20CORPORATE%20CENTER!5e0!3m2!1sen!2sph!4v1768455447944!5m2!1sen!2sph"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -290,12 +308,9 @@ export default function ContactPage() {
                     title="Aman Corporate Center Location"
                   />
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">J6V4+JF3, Pacol Rd, Naga City, Camarines Sur</p>
               </CardContent>
             </Card>
-          </div>
         </div>
-
         <AgentTools currentPath="/contact" />
       </div>
     </div>

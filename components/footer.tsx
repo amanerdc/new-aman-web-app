@@ -4,21 +4,20 @@ import { Building2, Phone, Mail, MapPin } from "lucide-react"
 export function Footer() {
   return (
     <footer className="border-t border-border bg-card">
-      <div className="container py-12">
+      <div className="container p-12">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* Company Info */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-                <Building2 className="h-6 w-6 text-primary-foreground" />
-              </div>
+              <div className="flex items-center justify-center bg-primary text-primary-foreground font-bold text-xl rounded-md h-10 w-10">
+                A
+            </div>
               <div className="flex flex-col">
-                <span className="text-lg font-bold leading-tight">Aman Group</span>
-                <span className="text-xs text-muted-foreground">of Companies</span>
+                <span className="text-lg font-bold leading-tight">Aman Group of Companies</span>
               </div>
             </Link>
             <p className="text-sm text-muted-foreground">
-              Building quality homes and communities for Filipino families since establishment.
+              Building quality homes and communities for Bicolano families since 1989.
             </p>
           </div>
 
@@ -29,6 +28,16 @@ export function Footer() {
               <li>
                 <Link href="/properties" className="hover:text-primary transition-colors">
                   Model Houses
+                </Link>
+              </li>
+              <li>
+                <Link href="/rfo" className="hover:text-primary transition-colors">
+                  Ready for Occupancy
+                </Link>
+              </li>
+              <li>
+                <Link href="/lot-only" className="hover:text-primary transition-colors">
+                  Lot Only
                 </Link>
               </li>
               <li>
@@ -45,15 +54,16 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-                <span>Parkview Naga Urban Residence, Zone 7, Brgy. San Felipe, Naga City</span>
+                <span>Aman Corporate Center, Zone 6, San Felipe, Naga City, Camarines Sur, Philippines</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0" />
-                <span>+63 XXX XXX XXXX</span>
+                <span>(054) 884-5188</span>
+                <span>(Smart) 09296083744</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0" />
-                <span>info@amangroup.ph</span>
+                <span>frontdesk@enjoyrealty.com</span>
               </li>
             </ul>
           </div>
@@ -61,7 +71,11 @@ export function Footer() {
           {/* Developer Info */}
           <div className="space-y-4">
             <h3 className="font-semibold">Developer</h3>
-            <p className="text-sm text-muted-foreground">Aman Engineering</p>
+            <p className="text-sm text-muted-foreground">
+              <Link href="/developers" className="hover:text-primary transition-colors">
+                  About Our Developers
+                </Link>
+            </p>
             <p className="text-sm text-muted-foreground">
               Licensed and accredited real estate developer committed to quality construction and customer satisfaction.
             </p>

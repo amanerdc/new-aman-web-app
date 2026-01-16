@@ -428,16 +428,6 @@ export function LoanCalculator() {
           )}
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="price">Total Contract Price (PHP)</Label>
-              <Input
-                id="price"
-                type="number"
-                placeholder="Enter price"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-            </div>
 
             <div className="space-y-2">
               <Label htmlFor="client-name">Client Name (Optional)</Label>
@@ -450,9 +440,20 @@ export function LoanCalculator() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="price">Total Contract Price (PHP)</Label>
+              <Input
+                id="price"
+                type="number"
+                placeholder="Enter price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="property-option">Property Option</Label>
               <Select value={propertyOption} onValueChange={(value: PropertyOption) => setPropertyOption(value)}>
-                <SelectTrigger id="property-option">
+                <SelectTrigger className="w-full h-11" id="property-option">
                   <SelectValue placeholder="Select option" />
                 </SelectTrigger>
                 <SelectContent>
@@ -471,7 +472,7 @@ export function LoanCalculator() {
                 value={downPaymentPercent.toString()}
                 onValueChange={(value) => setDownPaymentPercent(Number.parseInt(value))}
               >
-                <SelectTrigger id="downpayment">
+                <SelectTrigger className="w-full h-11" id="downpayment">
                   <SelectValue placeholder="Select %" />
                 </SelectTrigger>
                 <SelectContent>

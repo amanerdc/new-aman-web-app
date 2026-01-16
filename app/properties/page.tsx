@@ -1,10 +1,10 @@
 import Link from "next/link"
 import Image from "next/image"
-import { Building2 } from "lucide-react"
+import { Home, Building2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { modelHouseSeries } from "@/lib/data"
-import { AgentTools } from "@/components/agent-tools"
+
 
 export const metadata = {
   title: "Model Houses | Aman Group of Companies",
@@ -15,14 +15,20 @@ export default function PropertiesPage() {
   const allSeries = Object.values(modelHouseSeries)
 
   return (
-    <div className="py-12">
+    <div className="p-12">
       <div className="container">
+        {/* Breadcrumb */}
+        <div className="flex items-center text-sm mb-8">
+          <Link href="/" className="text-muted-foreground hover:text-primary">
+            <Home className="h-4 w-4 inline mr-1" />
+            Home
+          </Link>
+          <span className="mx-2 text-muted-foreground">/</span>
+          <span className="font-medium">Model House Series</span>
+        </div>
+
         {/* Header */}
         <div className="mb-12">
-          <div className="flex items-center gap-2 text-primary mb-4">
-            <Building2 className="h-5 w-5" />
-            <span className="text-sm font-medium">Model Houses</span>
-          </div>
           <h1 className="text-4xl font-bold tracking-tight mb-4">Explore Our Model House Series</h1>
           <p className="text-lg text-muted-foreground max-w-3xl">
             Each series offers different configurations and packages to suit your needs and budget. Click on a series to
@@ -84,8 +90,6 @@ export default function PropertiesPage() {
             </Link>
           ))}
         </div>
-
-        <AgentTools currentPath="/properties" />
       </div>
     </div>
   )
