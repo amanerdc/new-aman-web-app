@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
+import { getAgentById } from '@/lib/agents'
 
 export async function POST(request: NextRequest) {
   try {
     const { name, email, phone, projectLocation, propertyInterest, message, referredBy } = await request.json()
+
+    // Get agent details if referredBy is provided
+    const agent = referredBy ? getAgentById(referredBy) : null
 
     // Validate required fields
     if (!name || !email || !phone || !projectLocation) {
@@ -37,7 +41,12 @@ export async function POST(request: NextRequest) {
             <p><strong>Project Location:</strong> ${projectLocation}</p>
             ${propertyInterest ? `<p><strong>Property Interest:</strong> ${propertyInterest}</p>` : ''}
             ${message ? `<p><strong>Message:</strong></p><p>${message.replace(/\n/g, '<br>')}</p>` : ''}
-            ${referredBy ? `<p><strong>Referred By:</strong> ${referredBy}</p>` : ''}
+            ${agent ? `
+              <p><strong>Referred By:</strong> ${agent.name}</p>
+              <p><strong>Brokerage:</strong> ${agent.brokerage}</p>
+              <p><strong>Classification:</strong> ${agent.classification}</p>
+              <p><strong>Team:</strong> ${agent.team}</p>
+            ` : referredBy ? `<p><strong>Referred By:</strong> ${referredBy}</p>` : ''}
           </div>
           <p style="color: #666; font-size: 12px;">
             This email was sent from the contact form on your website.

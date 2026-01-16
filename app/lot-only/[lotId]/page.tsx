@@ -233,7 +233,7 @@ export default async function LotDetailPage({
 
         {/* Book a Viewing */}
         <div className="mb-8">
-          <BookViewingForm propertyName={lot.name} agentName={agent?.name} />
+          <BookViewingForm propertyName={lot.name} agentId={agentId} />
         </div>
 
         <AgentTools currentPath={`/lot-only/${lot.id}`} />

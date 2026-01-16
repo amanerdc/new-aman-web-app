@@ -43,7 +43,7 @@ export default function ContactPage() {
         },
         body: JSON.stringify({
           ...formData,
-          referredBy: agent?.name,
+          referredBy: agentId,
         }),
       })
 

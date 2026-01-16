@@ -11,12 +11,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 
+import { getAgentById } from "@/lib/agents"
+
 type BookViewingFormProps = {
   propertyName: string
-  agentName?: string | null
+  agentId?: string | null
 }
 
-export function BookViewingForm({ propertyName, agentName }: BookViewingFormProps) {
+export function BookViewingForm({ propertyName, agentId }: BookViewingFormProps) {
+  const agent = agentId ? getAgentById(agentId) : null
   const [date, setDate] = useState<Date | undefined>(undefined)
   const [formData, setFormData] = useState({
     name: "",
@@ -41,7 +44,7 @@ export function BookViewingForm({ propertyName, agentName }: BookViewingFormProp
           ...formData,
           preferredDate: date,
           propertyName,
-          referredBy: agentName,
+          referredBy: agentId,
         }),
       })
 
@@ -167,11 +170,11 @@ export function BookViewingForm({ propertyName, agentName }: BookViewingFormProp
     />
   </div>
 
-  {agentName && (
+  {agent && (
     <div className="p-3 bg-primary/10 rounded-lg">
       <p className="text-sm">
         <User className="h-3 w-3 inline mr-1" />
-        Referred by: <strong>{agentName}</strong>
+        Referred by: <strong>{agent.name}</strong>
       </p>
     </div>
   )}

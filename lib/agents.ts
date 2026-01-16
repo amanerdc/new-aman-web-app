@@ -1,47 +1,63 @@
 export type Agent = {
   id: string
   name: string
+  brokerage: string
+  classification: string
+  team: string
 }
 
 export const agents: Agent[] = [
-  { id: "t10-1", name: "Angelica O. Cleofe" },
-  { id: "t10-2", name: "Kristina Francia G. Daquioag" },
-  { id: "t10-3", name: "Mary Ann L. Picaso" },
-  { id: "t10-4", name: "Homer S.A. Reyes" },
-  { id: "t10-5", name: "Allen L. Damot" },
-  { id: "t10-6", name: "Marison M. Comia" },
-  { id: "t10-7", name: "Analen S. Roa" },
-  { id: "t10-8", name: "Angel P. Pante" },
-  { id: "t10-9", name: "Mariben C. Pante" },
-  { id: "t10-10", name: "Shania T. Aman" },
-  { id: "t10-11", name: "Armando L. Aman" },
-  { id: "t10-12", name: "Cheryl D.S. Rabano" },
-  { id: "t10-13", name: "Virginia F. Albao" },
-  { id: "t10-14", name: "Kristine F. Albao" },
-  { id: "t10-15", name: "Lanie I. Sabaybay" },
-  { id: "t10-16", name: "Bernadette P. Ulep" },
-  { id: "t10-17", name: "Francia G. Dematera" },
-  { id: "t10-18", name: "Josie T. Aguila" },
-  { id: "t10-19", name: "Roderick A. Rojo" },
-  { id: "t10-20", name: "Roden A. Rojo" },
-  { id: "t10-21", name: "Eva A. Rojo" },
-  { id: "t10-22", name: "Diana Angelica A. Rojo" },
-  { id: "t10-23", name: "Rolan L. Son" },
-  { id: "t10-24", name: "Michelle Rose P. Tubig" },
-  { id: "t10-25", name: "Jonalyn L. Arcilla" },
-  { id: "t10-26", name: "Regina Vilma A. Guevera" },
-  { id: "t10-27", name: "Allan D. Remoquillo" },
-  { id: "t10-28", name: "Roda M. Rebellion" },
-  { id: "t10-29", name: "Allene V. Oliver" },
-  { id: "t10-30", name: "Jose M. Bisana" },
-  { id: "t10-31", name: "Debbie G. Bolina" },
-  { id: "t10-32", name: "Elizabeth F. Dialogo" },
-  { id: "t10-33", name: "Dianna F. Reyes" },
-  { id: "t10-34", name: "Cristy B. Santos" },
-  { id: "t10-35", name: "Liberty M. Nabo" },
-  { id: "t10-36", name: "Loida J. Yuson" },
-  { id: "t10-37", name: "Emmanuel L. Magallona" },
-  { id: "t10-38", name: "Viva Francia A. Rojo" }
+  // Aces & B Realty
+  { id: "a10-1", name: "Angelica O. Cleofe", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a10-2", name: "Kristina Francia G. Daquioag", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a10-3", name: "Mary Ann L. Picaso", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a10-4", name: "Homer S.A. Reyes", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a10-5", name: "Allen L. Damot", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a10-6", name: "Marison M. Comia", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a10-7", name: "Analen S. Roa", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a10-8", name: "Angel P. Pante", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a10-9", name: "Mariben C. Pante", brokerage: "Aces & B Realty", classification: "Broker", team: "Alpha" },
+
+// Audjean Realty
+  { id: "a20-1", name: "Shania T. Aman", brokerage: "Audjean Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a20-2", name: "Armando L. Aman", brokerage: "Audjean Realty", classification: "Broker", team: "Alpha" },
+  { id: "a20-3", name: "Cheryl D.S. Rabano", brokerage: "Audjean Realty", classification: "Salesperson", team: "Alpha" },
+
+// Deocrats Realty
+  { id: "a30-1", name: "Virginia F. Albao", brokerage: "Deocrats Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a30-2", name: "Kristine F. Albao", brokerage: "Deocrats Realty", classification: "Salesperson", team: "Alpha" },
+
+// Dezhomes Realty
+  { id: "a40-1", name: "Lanie I. Sabaybay", brokerage: "Dezhomes Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a40-2", name: "Bernadette P. Ulep", brokerage: "Dezhomes Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a40-3", name: "Francia G. Dematera", brokerage: "Dezhomes Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a40-4", name: "Josie T. Aguila", brokerage: "Dezhomes Realty", classification: "Salesperson", team: "Alpha" },
+
+// Red Zeal Realty
+  { id: "a50-1", name: "Roderick A. Rojo", brokerage: "Red Zeal Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a50-2", name: "Roden A. Rojo", brokerage: "Red Zeal Realty", classification: "Broker", team: "Alpha" },
+  { id: "a50-3", name: "Eva A. Rojo", brokerage: "Red Zeal Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a50-4", name: "Diana Angelica A. Rojo", brokerage: "Red Zeal Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a50-5", name: "Rolan L. Son", brokerage: "Red Zeal Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a50-6", name: "Michelle Rose P. Tubig", brokerage: "Red Zeal Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a50-7", name: "Jonalyn L. Arcilla", brokerage: "Red Zeal Realty", classification: "Salesperson", team: "Alpha" },
+
+// Sweetville Realty
+  { id: "a60-1", name: "Regina Vilma A. Guevera", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a60-2", name: "Allan D. Remoquillo", brokerage: "Sweetville Realty", classification: "Broker", team: "Alpha" },
+  { id: "a60-3", name: "Roda M. Rebellion", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a60-4", name: "Allene V. Oliver", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a60-5", name: "Jose M. Bisana", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a60-6", name: "Debbie G. Bolina", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a60-7", name: "Elizabeth F. Dialogo", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a60-8", name: "Dianna F. Reyes", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a60-9", name: "Cristy B. Santos", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a60-10", name: "Liberty M. Nabo", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a60-11", name: "Loida J. Yuson", brokerage: "Sweetville Realty", classification: "Salesperson", team: "Alpha" },
+
+// Viva Realm Realty
+  { id: "a70-1", name: "Emmanuel L. Magallona", brokerage: "Viva Realm Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a70-2", name: "Viva Francia A. Rojo", brokerage: "Viva Realm Realty",classification: "Broker", team: "Alpha" }
 ]
 
 export function getAgentById(id: string): Agent | undefined {

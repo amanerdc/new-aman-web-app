@@ -202,7 +202,7 @@ export default async function UnitDetailPage({
         </div>
 
         <div className="mb-8">
-          <BookViewingForm propertyName={`${unit.seriesName} - ${unit.name}`} agentName={agent?.name} />
+          <BookViewingForm propertyName={`${unit.seriesName} - ${unit.name}`} agentId={agentId} />
         </div>
 
         <div className="space-y-1 mb-8">
