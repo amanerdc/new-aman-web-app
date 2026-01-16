@@ -1,3 +1,4 @@
+﻿// Re-export types
 export type UnitSpecifications = {
   wall?: string
   flooring?: string
@@ -89,6 +90,7 @@ export type ModelHouseSeries = {
   units: Unit[]
 }
 
+// Static data exports
 export const modelHouseSeries: Record<string, ModelHouseSeries> = {
   "jill-108": {
     id: "jill-108",
@@ -153,7 +155,7 @@ export const modelHouseSeries: Record<string, ModelHouseSeries> = {
         imageUrl:
           "https://8ybl2ah7tkcii6tt.public.blob.vercel-storage.com/Model_houses_images/Jill/Jill-DL0nFXnfesSdO9P5SZTrr6wLdudfCL.png",
         floorPlanPdfId: "1uFq1-LSFvJCJhcvq38l7ct3LhSMVwfjm",
-        walkthrough: null,
+        walkthrough: "https://www.youtube.com/embed/dQw4w9WgXcQ",
       },
       {
         id: "jill-108-complete",
@@ -177,7 +179,7 @@ export const modelHouseSeries: Record<string, ModelHouseSeries> = {
         imageUrl:
           "https://8ybl2ah7tkcii6tt.public.blob.vercel-storage.com/Model_houses_images/Jill/Jill-DL0nFXnfesSdO9P5SZTrr6wLdudfCL.png",
         floorPlanPdfId: "1uFq1-LSFvJCJhcvq38l7ct3LhSMVwfjm",
-        walkthrough: null,
+        walkthrough: "https://www.youtube.com/embed/dQw4w9WgXcQ",
       },
     ],
   },
@@ -336,7 +338,7 @@ export const modelHouseSeries: Record<string, ModelHouseSeries> = {
     loftReady: true,
     description: "A compact inner unit with loft-ready design, perfect for first-time homeowners.",
     longDescription:
-      "The Jade 45 Series is a compact yet functional inner unit designed for first-time homeowners. With a loft-ready design, this model maximizes vertical space to provide comfortable living areas. The ground floor features an open layout with provisions for living, dining, and kitchen areas, plus a toilet and bath. The loft area can be utilized as additional bedrooms or living space, offering a total floor area of 41 sqm when completed.",
+      "The Jade 45 Series is a compact yet functional inner unit designed for first-time homeowners. With a loft-ready design, this model maximizes vertical space to provide comfortable living areas. The ground floor features an open layout with provisions for living, dining, and kitchen areas, plus a toilet and bath. The loft area can be utilized as additional bedrooms or living space, with a total floor area of 41 sqm when completed.",
     features: [
       "Loft-ready design",
       "Open layout ground floor",
@@ -738,13 +740,13 @@ export const modelHouseSeries: Record<string, ModelHouseSeries> = {
 }
 
 // Loan Calculator Types and Data
-export type PropertyOption = "nur_lot_only" | "nur_house_lot" | "palm_lot_only" | "palm_house_lot"
+export type PropertyOption = 'nur_lot_only' | 'nur_house_lot' | 'palm_lot_only' | 'palm_house_lot'
 
 export const propertyOptions: { value: PropertyOption; label: string }[] = [
-  { value: "nur_lot_only", label: "NUR Lot Only" },
-  { value: "nur_house_lot", label: "NUR House & Lot" },
-  { value: "palm_lot_only", label: "Palm Lot Only" },
-  { value: "palm_house_lot", label: "Palm House & Lot" },
+  { value: 'nur_lot_only', label: 'NUR Lot Only' },
+  { value: 'nur_house_lot', label: 'NUR House & Lot' },
+  { value: 'palm_lot_only', label: 'Palm Lot Only' },
+  { value: 'palm_house_lot', label: 'Palm House & Lot' },
 ]
 
 export const reservationFees: Record<PropertyOption, number> = {
@@ -758,16 +760,18 @@ export const pagibigMaxLoan: Record<PropertyOption, number | null> = {
   nur_lot_only: 1000000,
   nur_house_lot: 2500000,
   palm_lot_only: 1600000,
-  palm_house_lot: null,
+  palm_house_lot: 4000000,
 }
 
 export const downPaymentOptions = [20, 25, 30, 35, 40, 50]
 
-// Factor rates for financing calculations
 export const inHouseFactorRates: Record<number, number> = {
-  5: 0.0205165313270512,
-  10: 0.0123985688874511,
-  15: 0.00984739557925592,
+  5: 0.0123985688874511,
+  10: 0.00984739557925592,
+  15: 0.00857422866500172,
+  20: 0.00781955369686785,
+  25: 0.00730928202377572,
+  30: 0.00691655172413793,
 }
 
 export const pagibigFactorRates: Record<number, number> = {
@@ -791,6 +795,9 @@ export const bankFactorRates: Record<number, number> = {
   5: 0.020037949,
   10: 0.0118701769135854,
   15: 0.00927012360002734,
+  20: 0.00781955369686785,
+  25: 0.00730928202377572,
+  30: 0.00691655172413793,
 }
 
 export const year2InterestRate = 0.0872197824600924

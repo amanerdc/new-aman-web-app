@@ -13,23 +13,9 @@ export const metadata: Metadata = {
   title: "Aman Group of Companies | Quality Homes in Naga City",
   description:
     "Discover quality model houses and affordable housing options in Parkview Naga Urban Residence. Calculate your home loan with our easy-to-use calculator.",
-  generator: "v0.app",
   icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
   },
 }
 

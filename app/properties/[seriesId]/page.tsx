@@ -8,19 +8,19 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { modelHouseSeries } from "@/lib/data"
 
-export async function generateStaticParams() {
-  return Object.keys(modelHouseSeries).map((seriesId) => ({
-    seriesId,
-  }))
-}
+// export async function generateStaticParams() {
+//   return Object.keys(modelHouseSeries).map((seriesId) => ({
+//     seriesId,
+//   }))
+// }
 
 export async function generateMetadata({ params }: { params: Promise<{ seriesId: string }> }) {
   const { seriesId } = await params
-  const series = modelHouseSeries[seriesId]
-  if (!series) return { title: "Not Found" }
+  // const series = modelHouseSeries[seriesId]
+  // if (!series) return { title: "Not Found" }
   return {
-    title: `${series.name} | Aman Group of Companies`,
-    description: series.longDescription,
+    title: `Series | Aman Group of Companies`,
+    // description: series.description,
   }
 }
 
@@ -29,7 +29,8 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
   const series = modelHouseSeries[seriesId]
 
   if (!series) {
-    notFound()
+    console.log('Series not found for ID:', seriesId)
+    return <div>Series not found</div>
   }
 
   return (
@@ -83,8 +84,8 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
             </div>
 
             <div className="pt-4 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-1">Base Price</p>
-              <p className="text-3xl font-bold text-primary">₱{series.basePrice.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground mb-1">Starting Price</p>
+              <p className="text-3xl font-bold text-primary">₱{series.units.length > 0 ? Math.min(...series.units.map(u => u.price)).toLocaleString() : 'Contact for pricing'}</p>
             </div>
           </div>
         </div>
@@ -98,7 +99,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
 
           <TabsContent value="units" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {series.units.map((unit) => (
+              {series.units && series.units.length > 0 ? series.units.map((unit) => (
                 <Card key={unit.id} className="overflow-hidden border-border/50 hover:border-primary/50 transition-all">
                   <div className="aspect-[16/10] overflow-hidden relative">
                     <Image
@@ -150,7 +151,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              )) : <p>No units available</p>}
             </div>
           </TabsContent>
 
@@ -164,12 +165,12 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {Object.entries(series.specifications).map(([key, value]) => (
+                  {series.specifications ? Object.entries(series.specifications).map(([key, value]) => (
                     <div key={key} className="space-y-1">
                       <h4 className="font-medium capitalize text-sm">{key.replace(/([A-Z])/g, " $1").trim()}</h4>
                       <p className="text-sm text-muted-foreground">{value}</p>
                     </div>
-                  ))}
+                  )) : <p>No specifications available</p>}
                 </div>
               </CardContent>
             </Card>

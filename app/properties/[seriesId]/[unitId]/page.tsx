@@ -237,7 +237,7 @@ export default async function UnitDetailPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {unit.walkthrough ? (
+            {unit.walkthrough && unit.walkthrough !== "https://www.youtube.com/embed/dQw4w9WgXcQ" ? (
               <div className="aspect-video rounded-lg overflow-hidden">
                 <iframe
                   src={unit.walkthrough}
@@ -249,7 +249,7 @@ export default async function UnitDetailPage({
               </div>
             ) : (
               <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                <p className="text-gray-500 text-lg">No available video</p>
+                <p className="text-gray-500 text-lg">No video available</p>
               </div>
             )}
           </CardContent>

@@ -51,9 +51,8 @@ export default function PropertiesPage() {
                   />
                   <div className="absolute top-3 left-3 flex gap-2">
                     <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
-                      {series.floorArea}
+                      {series.location}
                     </Badge>
-                    {series.loftReady && <Badge className="bg-primary/90 backdrop-blur-sm">Loft Ready</Badge>}
                   </div>
                 </div>
                 <CardContent className="p-6">
@@ -77,8 +76,8 @@ export default function PropertiesPage() {
                   {/* Price and Units */}
                   <div className="flex items-end justify-between pt-4 border-t border-border">
                     <div>
-                      <p className="text-sm text-muted-foreground">Base Price</p>
-                      <p className="text-2xl font-bold text-primary">₱{series.basePrice.toLocaleString()}</p>
+                      <p className="text-sm text-muted-foreground">Starting Price</p>
+                      <p className="text-2xl font-bold text-primary">₱{series.units.length > 0 ? Math.min(...series.units.map(u => u.price)).toLocaleString() : 'Contact for pricing'}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-muted-foreground">Available</p>

@@ -127,19 +127,14 @@ export default function HomePage() {
                     <CardContent className="p-4">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">
-                          {series.floorArea}
+                          {series.units[0]?.floorArea || 'Various sizes'}
                         </span>
-                        {series.loftReady && (
-                          <span className="text-xs font-medium text-accent bg-accent/10 px-2 py-0.5 rounded">
-                            Loft Ready
-                          </span>
-                        )}
                       </div>
                       <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">{series.name}</h3>
                       <p className="text-sm text-muted-foreground line-clamp-2">{series.description}</p>
                       <div className="mt-3 pt-3 border-t border-border">
                         <p className="text-sm text-muted-foreground">Starting at</p>
-                        <p className="text-lg font-bold text-primary">₱{series.basePrice.toLocaleString()}</p>
+                        <p className="text-lg font-bold text-primary">₱{Math.min(...series.units.map(u => u.price)).toLocaleString()}</p>
                       </div>
                     </CardContent>
                   </Card>
