@@ -43,7 +43,7 @@ export default function DevelopersPage() {
                 Enjoy Realty & Development Corporation
               </h1>
               <p className="text-white/90 text-base sm:text-lg lg:text-xl mb-4 lg:mb-6 leading-relaxed">
-                Palm Villages, Parkview Communities, Haciendas de Naga
+                Palm Villages, Parkview Communities, Haciendas de Naga, Employees' Village
               </p>
             </div>
           </div>
