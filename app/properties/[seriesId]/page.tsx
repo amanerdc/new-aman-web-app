@@ -194,8 +194,10 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
 
 
       </div>
+  )
+}
 
-        <Card className="bg-amber-50 border-amber-200">
+<Card className="bg-amber-50 border-amber-200">
             <CardContent className="pt-6">
               <div className="flex gap-3">
                 <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
@@ -219,5 +221,3 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
             </CardContent>
           </Card>
     </div>
-  )
-}
