@@ -45,7 +45,7 @@ export const enjoyRealtyProjects: DeveloperProject[] = [
   },
   {
     id: "parkview-employees-village",
-    name: "Parkview Employees Village",
+    name: "Parkview Employees' Village",
     description:
       "Offering economic housing for employees working in Bicol's premier business district.",
     location: "Brgy. San Felipe, Naga City",
