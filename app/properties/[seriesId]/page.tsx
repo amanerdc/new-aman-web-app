@@ -85,7 +85,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
 
             <div className="pt-4 border-t border-border">
               <div>
-                <p className="text-sm text-muted-foreground">Starting Price</p>
+                <p className="text-sm text-muted-foreground">Starting Price*</p>
                 <p className="text-2xl font-bold text-primary">
                   ₱
                   {series.units.length > 0
@@ -95,6 +95,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                       })
                     : 'Contact for pricing'}
                 </p>
+                <p className="text-sm text-muted-foreground">*This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.</p>
               </div>
             </div>
           </div>
