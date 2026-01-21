@@ -140,7 +140,6 @@ export default async function UnitDetailPage({
                   </span>
                 </div>
               </div>
-              <br />
               <p className="text-xs text-muted-foreground">*This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.</p>
             </div>
 
