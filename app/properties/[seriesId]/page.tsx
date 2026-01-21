@@ -84,8 +84,18 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
             </div>
 
             <div className="pt-4 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-1">Starting Price</p>
-              <p className="text-3xl font-bold text-primary">₱{series.units.length > 0 ? Math.min(...series.units.map(u => u.price)).toLocaleString() : 'Contact for pricing'}</p>
+              <div>
+                <p className="text-sm text-muted-foreground">Starting Price</p>
+                <p className="text-2xl font-bold text-primary">
+                  ₱
+                  {series.units.length > 0
+                    ? Math.min(...series.units.map(u => u.price)).toLocaleString('en-PH', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })
+                    : 'Contact for pricing'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -133,7 +143,12 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                     <div className="space-y-3 pt-3 border-t border-border">
                       <div className="flex justify-between">
                         <span className="text-sm text-muted-foreground">Total Contract Price</span>
-                        <span className="font-bold text-primary">₱{unit.price.toLocaleString()}</span>
+                        <span className="font-bold text-primary">
+                          ₱{unit.price.toLocaleString('en-PH', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                      </span>
                       </div>
 
                       <div className="flex gap-2">

@@ -76,8 +76,18 @@ export default function PropertiesPage() {
                   {/* Price and Units */}
                   <div className="flex items-end justify-between pt-4 border-t border-border">
                     <div>
-                      <p className="text-sm text-muted-foreground">Starting Price</p>
-                      <p className="text-2xl font-bold text-primary">₱{series.units.length > 0 ? Math.min(...series.units.map(u => u.price)).toLocaleString() : 'Contact for pricing'}</p>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Starting Price</p>
+                        <p className="text-2xl font-bold text-primary">
+                          ₱
+                          {series.units.length > 0
+                            ? Math.min(...series.units.map(u => u.price)).toLocaleString('en-PH', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
+                            : 'Contact for pricing'}
+                        </p>
+                      </div>
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-muted-foreground">Available</p>

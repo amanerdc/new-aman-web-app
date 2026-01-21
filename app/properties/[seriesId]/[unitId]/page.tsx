@@ -112,15 +112,32 @@ export default async function UnitDetailPage({
               <div className="grid gap-3">
                 <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
                   <span className="text-muted-foreground">Lot Only Price</span>
-                  <span className="font-semibold">₱{unit.lotOnlyPrice.toLocaleString()}</span>
+                  <span className="font-semibold">
+                    ₱{unit.lotOnlyPrice.toLocaleString('en-PH', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
+
                 <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
                   <span className="text-muted-foreground">House Construction Price</span>
-                  <span className="font-semibold">₱{unit.houseConstructionPrice.toLocaleString()}</span>
+                  <span className="font-semibold">
+                    ₱{unit.houseConstructionPrice.toLocaleString('en-PH', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
+
                 <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border border-primary/20">
                   <span className="font-medium">Total Contract Price</span>
-                  <span className="text-2xl font-bold text-primary">₱{unit.price.toLocaleString()}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    ₱{unit.price.toLocaleString('en-PH', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
               </div>
             </div>
