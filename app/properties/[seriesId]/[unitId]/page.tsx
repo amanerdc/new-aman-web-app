@@ -142,6 +142,7 @@ export default async function UnitDetailPage({
               </div>
             </div>
 
+
             <Button asChild size="lg" className="w-full gap-2">
               <Link
                 href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(unit.seriesName + " - " + unit.name)}${agentId ? `&agent=${agentId}` : ""}`}
@@ -271,30 +272,6 @@ export default async function UnitDetailPage({
             )}
           </CardContent>
         </Card>
-
-          <Card className="bg-amber-50 border-amber-200">
-            <CardContent className="pt-6">
-              <div className="flex gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium text-amber-800 mb-1">Important Notes</p>
-                   <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-4">
-                    <li>This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.</li>
-                    <li>
-                      Additional charges such as reservation fees, processing fees, and documentary stamp taxes are not
-                      included in these calculations.
-                    </li>
-                    <li>
-                      The standard reservation fee is ₱25,000.00 and is non-refundable but deductible from the total contract
-                      price.
-                    </li>
-                    <li>Interest rates are subject to change without prior notice.</li>
-                    <li> Please consult with our sales representatives for the most current rates and terms.</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
         <AgentTools currentPath={`/properties/${seriesId}/${unitId}`} />
       </div>
