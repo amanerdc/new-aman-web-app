@@ -95,7 +95,8 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                       })
                     : 'Contact for pricing'}
                 </p>
-                <p className="text-sm text-muted-foreground">*This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.</p>
+                <br />
+                <p className="text-xs text-muted-foreground">*This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.</p>
               </div>
             </div>
           </div>
