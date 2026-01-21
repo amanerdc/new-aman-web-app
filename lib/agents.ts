@@ -7,6 +7,7 @@ export type Agent = {
 }
 
 export const agents: Agent[] = [
+  // ALPHA
   // Aces & B Realty
   { id: "a10-1", name: "Angelica O. Cleofe", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
   { id: "a10-2", name: "Kristina Francia G. Daquioag", brokerage: "Aces & B Realty", classification: "Salesperson", team: "Alpha" },
@@ -26,12 +27,15 @@ export const agents: Agent[] = [
 // Deocrats Realty
   { id: "a30-1", name: "Virginia F. Albao", brokerage: "Deocrats Realty", classification: "Salesperson", team: "Alpha" },
   { id: "a30-2", name: "Kristine F. Albao", brokerage: "Deocrats Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a30-3", name: "Angelica S. De Castro", brokerage: "Deocrats Realty", classification: "Broker", team: "Alpha" },
 
 // Dezhomes Realty
   { id: "a40-1", name: "Lanie I. Sabaybay", brokerage: "Dezhomes Realty", classification: "Salesperson", team: "Alpha" },
   { id: "a40-2", name: "Bernadette P. Ulep", brokerage: "Dezhomes Realty", classification: "Salesperson", team: "Alpha" },
   { id: "a40-3", name: "Francia G. Dematera", brokerage: "Dezhomes Realty", classification: "Salesperson", team: "Alpha" },
   { id: "a40-4", name: "Josie T. Aguila", brokerage: "Dezhomes Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a40-5", name: "Francia G. Dematera", brokerage: "Dezhomes Realty", classification: "Salesperson", team: "Alpha" },
+
 
 // Red Zeal Realty
   { id: "a50-1", name: "Roderick A. Rojo", brokerage: "Red Zeal Realty", classification: "Salesperson", team: "Alpha" },
@@ -57,7 +61,40 @@ export const agents: Agent[] = [
 
 // Viva Realm Realty
   { id: "a70-1", name: "Emmanuel L. Magallona", brokerage: "Viva Realm Realty", classification: "Salesperson", team: "Alpha" },
-  { id: "a70-2", name: "Viva Francia A. Rojo", brokerage: "Viva Realm Realty",classification: "Broker", team: "Alpha" }
+  { id: "a70-2", name: "Viva Francia A. Rojo", brokerage: "Viva Realm Realty",classification: "Broker", team: "Alpha" },
+
+  // Cariaga Realty
+  { id: "a80-1", name: "Rowella P. Cariaga", brokerage: "Cariaga Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a80-2", name: "Diana Jane A. Peñaredondo", brokerage: "Cariaga Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a80-3", name: "Noel D. Aldiano", brokerage: "Cariaga Realty", classification: "Salesperson", team: "Alpha" },
+
+  // Giya Realty Services
+  { id: "a90-1", name: "Maricel B. Adan", brokerage: "Giya Realty Services", classification: "Broker", team: "Alpha" },
+
+  // MAVERICKS
+  // De Laber Realty and Mktg
+  { id: "m10-1", name: "Ma. Lourdes B. Aure", brokerage: "De Laber Realty and Mktg", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-2", name: "Anin D. Mangente", brokerage: "De Laber Realty and Mktg", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-3", name: "Charlize C. Chavez", brokerage: "De Laber Realty and Mktg", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-4", name: "Roselyn C. Chavez", brokerage: "De Laber Realty and Mktg", classification: "Salesperson", team: "Mavericks" },
+
+  // Adeg & Co.REB 
+  { id: "m20-1", name: "Edna C. De Chavez", brokerage: "Adeg & Co.REB ", classification: "Broker", team: "Mavericks" },
+  { id: "m20-2", name: "Janice R. Ortañez", brokerage: "Adeg & Co.REB ", classification: "Salesperson", team: "Mavericks" },
+  { id: "m20-3", name: "Maria Regina C. Avestruz", brokerage: "Adeg & Co.REB ", classification: "Salesperson", team: "Mavericks" },
+  { id: "m20-4", name: "Shiena A. Avanceña", brokerage: "Adeg & Co.REB ", classification: "Broker", team: "Mavericks" },
+  { id: "m20-5", name: "Freddie G. Gamba", brokerage: "Adeg & Co.REB ", classification: "Salesperson", team: "Mavericks" },
+  { id: "m20-6", name: "Rey C. Rentoria", brokerage: "Adeg & Co.REB ", classification: "Salesperson", team: "Mavericks" },
+
+  // TITANS
+  // Young Achievers' Realty
+  { id: "t10-1", name: "Jerwin A. Rojo", brokerage: "Young Achievers' Realty", classification: "Broker", team: "Titans" },
+
+  // K-realty
+  { id: "t20-1", name: "Jennifer U. Estrada", brokerage: "K-realty", classification: "Salesperson", team: "Titans" },
+
+  // EDP968 Real Estate Services
+  { id: "t30-1", name: "Maricar A. Llorin", brokerage: "EDP968 Real Estate Services", classification: "Salesperson", team: "Titans" }
 ]
 
 export function getAgentById(id: string): Agent | undefined {
