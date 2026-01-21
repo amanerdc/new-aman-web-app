@@ -23,6 +23,7 @@ export type LotOnlyProperty = {
 }
 
 export const lotOnlyProperties: LotOnlyProperty[] = [
+/** 
   {
     id: "parkview-lot-1",
     name: "Parkview Residential Lot 1",
@@ -211,6 +212,7 @@ export const lotOnlyProperties: LotOnlyProperty[] = [
     utilities: ["Water", "Electricity", "Internet", "Drainage"],
     nearbyAmenities: ["School", "Market", "Hospital", "Park", "Church"],
   },
+  **/
 ]
 
 export function getLotOnlyById(id: string): LotOnlyProperty | undefined {
