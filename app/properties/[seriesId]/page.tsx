@@ -149,6 +149,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                             maximumFractionDigits: 2,
                           })}
                       </span>
+
                       </div>
 
                       <div className="flex gap-2">
@@ -194,6 +195,6 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
 
 
       </div>
+    </div>
   )
 }
-
