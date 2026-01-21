@@ -63,7 +63,12 @@ export default function LotOnlyPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-muted-foreground">Price</p>
-                    <p className="font-bold text-primary">₱{lot.price.toLocaleString()}</p>
+                    <p className="font-bold text-primary">
+                      ₱{lot.price.toLocaleString('en-PH', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
                   </div>
                 </div>
               </CardContent>

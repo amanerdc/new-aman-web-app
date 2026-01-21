@@ -133,7 +133,10 @@ export default async function LotDetailPage({
                 <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border border-primary/20">
                   <span className="font-medium">Total Price</span>
                   <span className="text-2xl font-bold text-primary">
-                    ₱{lot.price.toLocaleString()}
+                    ₱{lot.price.toLocaleString('en-PH', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
                 </div>
 
