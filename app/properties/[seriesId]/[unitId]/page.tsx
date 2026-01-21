@@ -131,7 +131,7 @@ export default async function UnitDetailPage({
                 </div>
 
                 <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border border-primary/20">
-                  <span className="font-medium">Total Contract Price</span>
+                  <span className="font-medium">Total Contract Price*</span>
                   <span className="text-2xl font-bold text-primary">
                     ₱{unit.price.toLocaleString('en-PH', {
                       minimumFractionDigits: 2,
@@ -140,6 +140,8 @@ export default async function UnitDetailPage({
                   </span>
                 </div>
               </div>
+              <br />
+              <p className="text-xs text-muted-foreground">*This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.</p>
             </div>
 
 
