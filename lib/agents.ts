@@ -75,10 +75,14 @@ export const agents: Agent[] = [
 
   // MAVERICKS
   // De Laber Realty and Mktg
-  { id: "m10-1", name: "Ma. Lourdes B. Aure", brokerage: "De Laber Realty and Mktg", classification: "Salesperson", team: "Mavericks" },
-  { id: "m10-2", name: "Anin D. Mangente", brokerage: "De Laber Realty and Mktg", classification: "Salesperson", team: "Mavericks" },
-  { id: "m10-3", name: "Charlize C. Chavez", brokerage: "De Laber Realty and Mktg", classification: "Salesperson", team: "Mavericks" },
-  { id: "m10-4", name: "Roselyn C. Chavez", brokerage: "De Laber Realty and Mktg", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-1", name: "Ma. Lourdes B. Aure", brokerage: "De Laber Realty & Marketing Enterprises t", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-2", name: "Anin D. Mangente", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-3", name: "Charlize C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-4", name: "Roselyn C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-5", name: "Nicole C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-6", name: "Allyson C. Rivada", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-7", name: "Cynthia B. De las Alas", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Broker", team: "Mavericks" },
+
 
   // Adeg & Co.REB 
   { id: "m20-1", name: "Edna C. De Chavez", brokerage: "Adeg & Co.REB ", classification: "Broker", team: "Mavericks" },
@@ -91,9 +95,10 @@ export const agents: Agent[] = [
   // TITANS
   // Young Achievers' Realty
   { id: "t10-1", name: "Jerwin A. Rojo", brokerage: "Young Achievers' Realty", classification: "Broker", team: "Titans" },
+  { id: "t10-2", name: "KLimberly C. Mondala", brokerage: "Young Achievers' Realty", classification: "Salesperson", team: "Titans" },
 
   // K-realty
-  { id: "t20-1", name: "Jennifer U. Estrada", brokerage: "K-realty", classification: "Salesperson", team: "Titans" },
+  { id: "t20-1", name: "Jennifer U. Estrada", brokerage: "K-rgealty", classification: "Salesperson", team: "Titans" },
 
   // EDP968 Real Estate Services
   { id: "t30-1", name: "Maricar A. Llorin", brokerage: "EDP968 Real Estate Services", classification: "Salesperson", team: "Titans" }
