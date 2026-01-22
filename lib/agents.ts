@@ -95,7 +95,7 @@ export const agents: Agent[] = [
   // TITANS
   // Young Achievers' Realty
   { id: "t10-1", name: "Jerwin A. Rojo", brokerage: "Young Achievers' Realty", classification: "Broker", team: "Titans" },
-  { id: "t10-2", name: "KLimberly C. Mondala", brokerage: "Young Achievers' Realty", classification: "Salesperson", team: "Titans" },
+  { id: "t10-2", name: "Kimberly C. Mondala", brokerage: "Young Achievers' Realty", classification: "Salesperson", team: "Titans" },
 
   // K-realty
   { id: "t20-1", name: "Jennifer U. Estrada", brokerage: "K-rgealty", classification: "Salesperson", team: "Titans" },
