@@ -23,6 +23,8 @@ export const agents: Agent[] = [
   { id: "a20-1", name: "Shania T. Aman", brokerage: "Audjean Realty", classification: "Salesperson", team: "Alpha" },
   { id: "a20-2", name: "Armando L. Aman", brokerage: "Audjean Realty", classification: "Broker", team: "Alpha" },
   { id: "a20-3", name: "Cheryl D.S. Rabano", brokerage: "Audjean Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a20-4", name: "Hana Beltran", brokerage: "Audjean Realty", classification: "Salesperson", team: "Alpha" },
+  { id: "a20-5", name: "Arnold Veluz Corre", brokerage: "Audjean Realty", classification: "Salesperson", team: "Alpha" },
 
 // Deocrats Realty
   { id: "a30-1", name: "Virginia F. Albao", brokerage: "Deocrats Realty", classification: "Salesperson", team: "Alpha" },
