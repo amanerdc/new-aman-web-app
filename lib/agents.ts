@@ -75,13 +75,13 @@ export const agents: Agent[] = [
 
   // MAVERICKS
   // De Laber Realty and Mktg
-  { id: "m10-1", name: "Ma. Lourdes B. Aure", brokerage: "De Laber Realty & Marketing Enterprises t", classification: "Salesperson", team: "Mavericks" },
-  { id: "m10-2", name: "Anin D. Mangente", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
-  { id: "m10-3", name: "Charlize C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
-  { id: "m10-4", name: "Roselyn C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
-  { id: "m10-5", name: "Nicole C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
-  { id: "m10-6", name: "Allyson C. Rivada", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Salesperson", team: "Mavericks" },
-  { id: "m10-7", name: "Cynthia B. De las Alas", brokerage: "De Laber Realty & Marketing Enterprises ", classification: "Broker", team: "Mavericks" },
+  { id: "m10-1", name: "Ma. Lourdes B. Aure", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-2", name: "Anin D. Mangente", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-3", name: "Charlize C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-4", name: "Roselyn C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-5", name: "Nicole C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-6", name: "Allyson C. Rivada", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Salesperson", team: "Mavericks" },
+  { id: "m10-7", name: "Cynthia B. De las Alas", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Broker", team: "Mavericks" },
 
 
   // Adeg & Co.REB 
