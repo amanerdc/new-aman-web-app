@@ -1423,9 +1423,6 @@ export const inHouseFactorRates: Record<number, number> = {
   5: 0.0123985688874511,
   10: 0.00984739557925592,
   15: 0.00857422866500172,
-  20: 0.00781955369686785,
-  25: 0.00730928202377572,
-  30: 0.00691655172413793,
 }
 
 export const pagibigFactorRates: Record<number, number> = {
@@ -1449,9 +1446,6 @@ export const bankFactorRates: Record<number, number> = {
   5: 0.020037949,
   10: 0.0118701769135854,
   15: 0.00927012360002734,
-  20: 0.00781955369686785,
-  25: 0.00730928202377572,
-  30: 0.00691655172413793,
 }
 
 export const year2InterestRate = 0.0872197824600924
