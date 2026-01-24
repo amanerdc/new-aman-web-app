@@ -29,15 +29,22 @@ type LoanResults = {
   downPaymentAmount: number
   reservationFee: number
   option1Monthly: number
+  option1RequiredIncome: number
   option2Year1Monthly: number
   option2Year2WithInterest: number
   option2Year2Waived: number
+  option2Year2WaivedRequiredIncome: number
   balanceAmount: number
   inHouseMonthly: Record<number, number>
+  inHouseRequiredIncome: Record<number, number>
   pagibigMonthly: Record<number, number>
+  pagibigRequiredIncome: Record<number, number>
   pagibigMaxMonthly: Record<number, number>
+  pagibigMaxRequiredIncome: Record<number, number>
   remainingAmountMonthly: Record<number, number>
+  remainingAmountRequiredIncome: Record<number, number>
   bankMonthly: Record<number, number>
+  bankRequiredIncome: Record<number, number>
   hasRemainingAmount: boolean
   pagibigMaxLoanAmount: number | null
   remainingForDeveloper: number
@@ -90,6 +97,7 @@ export function LoanCalculator() {
 
     // Option 1: Monthly DP in 12 months
     const option1 = (dpAmount - resFee) / 12
+    const option1RequiredIncome = option1 / 0.40
 
     // Option 2: DP in 2 years
     const year1Payable = priceValue * 0.1 - resFee
@@ -97,24 +105,34 @@ export function LoanCalculator() {
     const option2Year1 = year1Payable / 12
     const option2Year2Interest = year2Payable * year2InterestRate
     const option2Year2Waived = year2Payable / 12
+    const option2Year2WaivedRequiredIncome = option2Year2Waived / 0.40
 
     // In-House Financing
     const inHouseMonthly: Record<number, number> = {}
+    const inHouseRequiredIncome: Record<number, number> = {}
     Object.entries(inHouseFactorRates).forEach(([years, rate]) => {
-      inHouseMonthly[Number.parseInt(years)] = balance * rate
+      const monthly = balance * rate
+      inHouseMonthly[Number.parseInt(years)] = monthly
+      inHouseRequiredIncome[Number.parseInt(years)] = monthly / 0.40
     })
 
     // Pag-IBIG Financing
     const pagibigMonthly: Record<number, number> = {}
+    const pagibigRequiredIncome: Record<number, number> = {}
     Object.entries(pagibigFactorRates).forEach(([years, rate]) => {
-      pagibigMonthly[Number.parseInt(years)] = balance * rate
+      const monthly = balance * rate
+      pagibigMonthly[Number.parseInt(years)] = monthly
+      pagibigRequiredIncome[Number.parseInt(years)] = monthly / 0.40
     })
 
     // Pag-IBIG Max Loanable
     const pagibigMaxMonthly: Record<number, number> = {}
+    const pagibigMaxRequiredIncome: Record<number, number> = {}
     if (maxLoan) {
       Object.entries(pagibigFactorRates).forEach(([years, rate]) => {
-        pagibigMaxMonthly[Number.parseInt(years)] = maxLoan * rate
+        const monthly = maxLoan * rate
+        pagibigMaxMonthly[Number.parseInt(years)] = monthly
+        pagibigMaxRequiredIncome[Number.parseInt(years)] = monthly / 0.40
       })
     }
 
@@ -122,16 +140,22 @@ export function LoanCalculator() {
     const hasRemaining = maxLoan !== null && balance > maxLoan
     const remainingForDev = hasRemaining ? balance - maxLoan : 0
     const remainingAmountMonthly: Record<number, number> = {}
+    const remainingAmountRequiredIncome: Record<number, number> = {}
     if (hasRemaining) {
       Object.entries(remainingAmountFactorRates).forEach(([years, rate]) => {
-        remainingAmountMonthly[Number.parseInt(years)] = remainingForDev * rate
+        const monthly = remainingForDev * rate
+        remainingAmountMonthly[Number.parseInt(years)] = monthly
+        remainingAmountRequiredIncome[Number.parseInt(years)] = monthly / 0.40
       })
     }
 
     // Bank Financing
     const bankMonthly: Record<number, number> = {}
+    const bankRequiredIncome: Record<number, number> = {}
     Object.entries(bankFactorRates).forEach(([years, rate]) => {
-      bankMonthly[Number.parseInt(years)] = balance * rate
+      const monthly = balance * rate
+      bankMonthly[Number.parseInt(years)] = monthly
+      bankRequiredIncome[Number.parseInt(years)] = monthly / 0.40
     })
 
     setResults({
@@ -140,15 +164,22 @@ export function LoanCalculator() {
       downPaymentAmount: dpAmount,
       reservationFee: resFee,
       option1Monthly: option1,
+      option1RequiredIncome,
       option2Year1Monthly: option2Year1,
       option2Year2WithInterest: option2Year2Interest,
       option2Year2Waived: option2Year2Waived,
+      option2Year2WaivedRequiredIncome,
       balanceAmount: balance,
       inHouseMonthly,
+      inHouseRequiredIncome,
       pagibigMonthly,
+      pagibigRequiredIncome,
       pagibigMaxMonthly,
+      pagibigMaxRequiredIncome,
       remainingAmountMonthly,
+      remainingAmountRequiredIncome,
       bankMonthly,
+      bankRequiredIncome,
       hasRemainingAmount: hasRemaining,
       pagibigMaxLoanAmount: maxLoan,
       remainingForDeveloper: remainingForDev,
@@ -193,69 +224,71 @@ export function LoanCalculator() {
           * { box-sizing: border-box; }
           body { 
             font-family: system-ui, -apple-system, sans-serif; 
-            padding: 40px; 
+            padding: 20px; 
             color: #1a1a1a; 
             max-width: 800px;
             margin: 0 auto;
-            line-height: 1.5;
+            line-height: 1.3;
+            font-size: 12px;
           }
-          h1 { color: #166534; margin-bottom: 8px; font-size: 24px; }
+          h1 { color: #166534; margin-bottom: 6px; font-size: 20px; }
           h2 { 
             color: #166534; 
-            margin-top: 32px; 
-            margin-bottom: 16px; 
-            font-size: 18px; 
+            margin-top: 20px; 
+            margin-bottom: 10px; 
+            font-size: 16px; 
             border-bottom: 2px solid #166534;
-            padding-bottom: 8px;
+            padding-bottom: 4px;
           }
           h3 { 
             color: #374151; 
-            margin-top: 20px; 
-            margin-bottom: 12px; 
-            font-size: 15px;
+            margin-top: 12px; 
+            margin-bottom: 8px; 
+            font-size: 13px;
             font-weight: 600;
           }
           .header { 
-            margin-bottom: 32px; 
+            margin-bottom: 20px; 
             border-bottom: 3px solid #166534; 
-            padding-bottom: 20px; 
+            padding-bottom: 12px; 
           }
-          .header p { margin: 4px 0; color: #6b7280; }
-          .section { margin-bottom: 24px; }
+          .header p { margin: 2px 0; color: #6b7280; font-size: 11px; }
+          .section { margin-bottom: 16px; }
           .row { 
             display: flex; 
             justify-content: space-between; 
-            padding: 12px 0; 
+            padding: 6px 0; 
             border-bottom: 1px solid #e5e7eb; 
           }
           .row:last-child { border-bottom: none; }
-          .label { color: #6b7280; }
-          .value { font-weight: 600; text-align: right; }
+          .label { color: #6b7280; font-size: 11px; }
+          .value { font-weight: 600; text-align: right; font-size: 11px; }
           .highlight { 
             background: #f0fdf4; 
-            padding: 16px; 
-            border-radius: 8px; 
-            margin: 16px 0;
+            padding: 10px; 
+            border-radius: 6px; 
+            margin: 10px 0;
             border: 1px solid #bbf7d0;
           }
-          .highlight .row { border-bottom: none; padding: 8px 0; }
-          .highlight .value { color: #166534; font-size: 18px; }
+          .highlight .row { border-bottom: none; padding: 4px 0; }
+          .highlight .value { color: #166534; font-size: 14px; }
           .note {
-            margin-top: 40px;
-            padding: 16px;
+            margin-top: 20px;
+            padding: 10px;
             background: #fef3c7;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1px solid #fcd34d;
-            font-size: 13px;
+            font-size: 11px;
             color: #92400e;
           }
           .note-title {
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
           }
           @media print { 
-            body { padding: 20px; } 
+            body { padding: 15px; font-size: 11px; } 
             .section { page-break-inside: avoid; }
+            .page-break { page-break-before: always; }
           }
         </style>
       </head>
@@ -297,6 +330,10 @@ export function LoanCalculator() {
             <span class="label">Monthly Payment</span>
             <span class="value">${formatCurrency(results.option1Monthly)}</span>
           </div>
+          <div class="row">
+            <span class="label">Required Income</span>
+            <span class="value">${formatCurrency(results.option1RequiredIncome)}</span>
+          </div>
           
           <h3>Option 2: Down Payment (2 Years to Pay)</h3>
           <div class="row">
@@ -311,6 +348,10 @@ export function LoanCalculator() {
             <span class="label">Year 2 (Waived Interest) - Monthly</span>
             <span class="value">${formatCurrency(results.option2Year2Waived)}</span>
           </div>
+          <div class="row">
+            <span class="label">Required Income</span>
+            <span class="value">${formatCurrency(results.option2Year2WaivedRequiredIncome)}</span>
+          </div>
         </div>
 
         <div class="section">
@@ -319,8 +360,8 @@ export function LoanCalculator() {
             .map(
               ([years, amount]) => `
             <div class="row">
-              <span class="label">${years} Years to Pay</span>
-              <span class="value">${formatCurrency(amount)}</span>
+              <span class="label">${years} Years to Pay / Required Income</span>
+              <span class="value">${formatCurrency(amount)} / ${formatCurrency(results.inHouseRequiredIncome[Number.parseInt(years)])}</span>
             </div>
           `,
             )
@@ -333,8 +374,8 @@ export function LoanCalculator() {
             .map(
               ([years, amount]) => `
             <div class="row">
-              <span class="label">${years} Years to Pay</span>
-              <span class="value">${formatCurrency(amount)}</span>
+              <span class="label">${years} Years to Pay / Required Income</span>
+              <span class="value">${formatCurrency(amount)} / ${formatCurrency(results.pagibigRequiredIncome[Number.parseInt(years)])}</span>
             </div>
           `,
             )
@@ -350,22 +391,8 @@ export function LoanCalculator() {
             .map(
               ([years, amount]) => `
             <div class="row">
-              <span class="label">${years} Years to Pay</span>
-              <span class="value">${formatCurrency(amount)}</span>
-            </div>
-          `,
-            )
-            .join("")}
-        </div>
-
-        <div class="section">
-          <h2>Remaining to Developer (8.5% Interest) - ${formatCurrency(results.remainingForDeveloper)}</h2>
-          ${Object.entries(results.remainingAmountMonthly)
-            .map(
-              ([years, amount]) => `
-            <div class="row">
-              <span class="label">${years} Year${Number.parseInt(years) > 1 ? "s" : ""} to Pay</span>
-              <span class="value">${formatCurrency(amount)}</span>
+              <span class="label">${years} Years to Pay / Required Income</span>
+              <span class="value">${formatCurrency(amount)} / ${formatCurrency(results.pagibigMaxRequiredIncome[Number.parseInt(years)])}</span>
             </div>
           `,
             )
@@ -381,8 +408,8 @@ export function LoanCalculator() {
             .map(
               ([years, amount]) => `
             <div class="row">
-              <span class="label">${years} Years to Pay</span>
-              <span class="value">${formatCurrency(amount)}</span>
+              <span class="label">${years} Years to Pay / Required Income</span>
+              <span class="value">${formatCurrency(amount)} / ${formatCurrency(results.bankRequiredIncome[Number.parseInt(years)])}</span>
             </div>
           `,
             )
@@ -390,8 +417,23 @@ export function LoanCalculator() {
         </div>
 
         <div class="note">
-          <div class="note-title">Disclaimer</div>
-          This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.
+          <p className="font-medium text-amber-800 mb-1">Important Notes</p>
+            <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-4">
+              <li>
+                This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.
+              </li>
+              <li>
+                Additional charges such as reservation fees, processing fees, and documentary stamp taxes are not included in these calculations.
+              </li>
+              <li>
+                The standard reservation fee is ₱25,000.00 and is non-refundable but deductible from the total contract price.
+              </li>
+              <li>
+                Interest rates are subject to change without prior notice.</li>
+              <li> 
+                Please consult with our sales representatives for the most current rates and terms.
+              </li>
+            </ul>
         </div>
       </body>
       </html>
@@ -498,7 +540,7 @@ export function LoanCalculator() {
         <div ref={resultsRef} id="loan-results" className="space-y-6">
           {/* Summary Card */}
           <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="pt-6">
+            <CardContent className="p-0">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="text-center p-4">
                   <p className="text-sm text-muted-foreground mb-1">Total Contract Price</p>
@@ -536,6 +578,10 @@ export function LoanCalculator() {
                     <p className="text-sm text-muted-foreground">Monthly Payment</p>
                     <p className="text-xl font-bold text-primary">{formatCurrency(results.option1Monthly)}</p>
                   </div>
+                  <div className="p-3 bg-gray-100 rounded-lg mt-2">
+                    <p className="text-sm text-muted-foreground">Required Income</p>
+                    <p className="text-xl font-bold text-primary">{formatCurrency(results.option1RequiredIncome)}</p>
+                  </div>
                 </div>
 
                 <Separator />
@@ -555,6 +601,10 @@ export function LoanCalculator() {
                       <p className="text-sm text-muted-foreground">Year 2 (Waived Interest) - Monthly</p>
                       <p className="text-lg font-bold">{formatCurrency(results.option2Year2Waived)}</p>
                     </div>
+                    <div className="p-3 bg-gray-100 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Required Income</p>
+                      <p className="text-lg font-bold text-primary">{formatCurrency(results.option2Year2WaivedRequiredIncome)}</p>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -571,9 +621,15 @@ export function LoanCalculator() {
               <CardContent>
                 <div className="space-y-2">
                   {Object.entries(results.inHouseMonthly).map(([years, amount]) => (
-                    <div key={years} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                      <span className="text-muted-foreground">{years} Years to Pay</span>
-                      <span className="font-bold">{formatCurrency(amount)}</span>
+                    <div key={years} className="space-y-2">
+                      <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
+                        <span className="text-muted-foreground">{years} Years to Pay</span>
+                        <span className="font-bold">{formatCurrency(amount)}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-100 rounded-lg ml-4">
+                        <span className="text-muted-foreground text-sm">Required Income</span>
+                        <span className="font-bold text-primary">{formatCurrency(results.inHouseRequiredIncome[Number.parseInt(years)])}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -591,9 +647,15 @@ export function LoanCalculator() {
               <CardContent>
                 <div className="space-y-2">
                   {Object.entries(results.pagibigMonthly).map(([years, amount]) => (
-                    <div key={years} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                      <span className="text-muted-foreground">{years} Years to Pay</span>
-                      <span className="font-bold">{formatCurrency(amount)}</span>
+                    <div key={years} className="space-y-2">
+                      <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
+                        <span className="text-muted-foreground">{years} Years to Pay</span>
+                        <span className="font-bold">{formatCurrency(amount)}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-100 rounded-lg ml-4">
+                        <span className="text-muted-foreground text-sm">Required Income</span>
+                        <span className="font-bold text-primary">{formatCurrency(results.pagibigRequiredIncome[Number.parseInt(years)])}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -612,9 +674,15 @@ export function LoanCalculator() {
                   <CardContent>
                     <div className="space-y-2">
                       {Object.entries(results.pagibigMaxMonthly).map(([years, amount]) => (
-                        <div key={years} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                          <span className="text-muted-foreground">{years} Years to Pay</span>
-                          <span className="font-bold">{formatCurrency(amount)}</span>
+                        <div key={years} className="space-y-2">
+                          <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
+                            <span className="text-muted-foreground">{years} Years to Pay</span>
+                            <span className="font-bold">{formatCurrency(amount)}</span>
+                          </div>
+                          <div className="flex justify-between items-center p-3 bg-gray-100 rounded-lg ml-4">
+                            <span className="text-muted-foreground text-sm">Required Income</span>
+                            <span className="font-bold text-primary">{formatCurrency(results.pagibigMaxRequiredIncome[Number.parseInt(years)])}</span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -634,11 +702,13 @@ export function LoanCalculator() {
                   <CardContent>
                     <div className="space-y-2">
                       {Object.entries(results.remainingAmountMonthly).map(([years, amount]) => (
-                        <div key={years} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                          <span className="text-muted-foreground">
-                            {years} Year{Number.parseInt(years) > 1 ? "s" : ""} to Pay
-                          </span>
-                          <span className="font-bold">{formatCurrency(amount)}</span>
+                        <div key={years}>
+                          <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
+                            <span className="text-muted-foreground">
+                              {years} Year{Number.parseInt(years) > 1 ? "s" : ""} to Pay
+                            </span>
+                            <span className="font-bold">{formatCurrency(amount)}</span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -658,9 +728,15 @@ export function LoanCalculator() {
               <CardContent>
                 <div className="space-y-2">
                   {Object.entries(results.bankMonthly).map(([years, amount]) => (
-                    <div key={years} className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                      <span className="text-muted-foreground">{years} Years to Pay</span>
-                      <span className="font-bold">{formatCurrency(amount)}</span>
+                    <div key={years} className="space-y-2">
+                      <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
+                        <span className="text-muted-foreground">{years} Years to Pay</span>
+                        <span className="font-bold">{formatCurrency(amount)}</span>
+                      </div>
+                      <div className="flex justify-between items-center p-3 bg-gray-100 rounded-lg ml-4">
+                        <span className="text-muted-foreground text-sm">Required Income</span>
+                        <span className="font-bold text-primary">{formatCurrency(results.bankRequiredIncome[Number.parseInt(years)])}</span>
+                      </div>
                     </div>
                   ))}
                 </div>

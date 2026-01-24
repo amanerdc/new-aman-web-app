@@ -85,12 +85,12 @@ export const agents: Agent[] = [
 
 
   // Adeg & Co.REB 
-  { id: "m20-1", name: "Edna C. De Chavez", brokerage: "Adeg & Co.REB ", classification: "Broker", team: "Mavericks" },
-  { id: "m20-2", name: "Janice R. Ortañez", brokerage: "Adeg & Co.REB ", classification: "Salesperson", team: "Mavericks" },
-  { id: "m20-3", name: "Maria Regina C. Avestruz", brokerage: "Adeg & Co.REB ", classification: "Salesperson", team: "Mavericks" },
-  { id: "m20-4", name: "Shiena A. Avanceña", brokerage: "Adeg & Co.REB ", classification: "Broker", team: "Mavericks" },
-  { id: "m20-5", name: "Freddie G. Gamba", brokerage: "Adeg & Co.REB ", classification: "Salesperson", team: "Mavericks" },
-  { id: "m20-6", name: "Rey C. Rentoria", brokerage: "Adeg & Co.REB ", classification: "Salesperson", team: "Mavericks" },
+  { id: "m20-1", name: "Edna C. De Chavez", brokerage: "Adeg & Co.REB", classification: "Broker", team: "Mavericks" },
+  { id: "m20-2", name: "Janice R. Ortañez", brokerage: "Adeg & Co.REB", classification: "Salesperson", team: "Mavericks" },
+  { id: "m20-3", name: "Maria Regina C. Avestruz", brokerage: "Adeg & Co.REB", classification: "Salesperson", team: "Mavericks" },
+  { id: "m20-4", name: "Shiena A. Avanceña", brokerage: "Adeg & Co.REB", classification: "Broker", team: "Mavericks" },
+  { id: "m20-5", name: "Freddie G. Gamba", brokerage: "Adeg & Co.REB", classification: "Salesperson", team: "Mavericks" },
+  { id: "m20-6", name: "Rey C. Rentoria", brokerage: "Adeg & Co.REB", classification: "Salesperson", team: "Mavericks" },
 
   // TITANS
   // Young Achievers' Realty
