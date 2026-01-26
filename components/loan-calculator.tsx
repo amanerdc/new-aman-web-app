@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Download, Calculator, Building, Banknote, Landmark, Home, AlertCircle, User } from "lucide-react"
 import html2canvas from "html2canvas"
+import Image from "next/image"
 import {
   propertyOptions,
   reservationFees,
@@ -23,6 +24,7 @@ import {
   type PropertyOption,
 } from "@/lib/data"
 import { getAgentById } from "@/lib/agents"
+import { findUnitByDisplayName } from "@/lib/utils"
 
 type LoanResults = {
   price: number
@@ -62,6 +64,7 @@ export function LoanCalculator() {
   const [unitName, setUnitName] = useState<string>("")
   const [clientName, setClientName] = useState<string>("")
   const [agentName, setAgentName] = useState<string>("")
+  const [unitImage, setUnitImage] = useState<string | null>(null)
 
   // Pre-fill from URL params
   useEffect(() => {
@@ -75,6 +78,11 @@ export function LoanCalculator() {
     }
     if (unitParam) {
       setUnitName(unitParam)
+      // Find unit image
+      const unitData = findUnitByDisplayName(unitParam)
+      if (unitData) {
+        setUnitImage(unitData.unit.imageUrl)
+      }
     }
     if (optionParam && propertyOptions.some((opt) => opt.value === optionParam)) {
       setPropertyOption(optionParam)
@@ -216,6 +224,58 @@ export function LoanCalculator() {
             ? `<p><strong>Prepared by:</strong> ${agentName}</p>`
             : ""
 
+    const unitImageHtml = unitImage
+      ? `<div class="two-column-layout">
+          <div class="image-column">
+            <img src="${unitImage}" alt="${unitName}" style="max-width: 300px; max-height: 225px; border-radius: 8px; border: 1px solid #e5e7eb;" />
+            <p style="font-size: 10px; color: #6b7280; margin-top: 4px;">${unitName}</p>
+          </div>
+          <div class="summary-column">
+            <div class="section">
+              <h2>Summary</h2>
+              <div class="row">
+                <span class="label">Total Contract Price</span>
+                <span class="value">${formatCurrency(results.price)}</span>
+              </div>
+              <div class="row">
+                <span class="label">Down Payment (${results.downPaymentPercent}%)</span>
+                <span class="value">${formatCurrency(results.downPaymentAmount)}</span>
+              </div>
+              <div class="row">
+                <span class="label">Reservation Fee</span>
+                <span class="value">${formatCurrency(results.reservationFee)}</span>
+              </div>
+              <div class="highlight">
+                <div class="row">
+                  <span class="label"><strong>Balance Amount</strong></span>
+                  <span class="value">${formatCurrency(results.balanceAmount)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`
+      : `<div class="section">
+          <h2>Summary</h2>
+          <div class="row">
+            <span class="label">Total Contract Price</span>
+            <span class="value">${formatCurrency(results.price)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Down Payment (${results.downPaymentPercent}%)</span>
+            <span class="value">${formatCurrency(results.downPaymentAmount)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Reservation Fee</span>
+            <span class="value">${formatCurrency(results.reservationFee)}</span>
+          </div>
+          <div class="highlight">
+            <div class="row">
+              <span class="label"><strong>Balance Amount</strong></span>
+              <span class="value">${formatCurrency(results.balanceAmount)}</span>
+            </div>
+          </div>
+        </div>`
+
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -291,6 +351,21 @@ export function LoanCalculator() {
             font-size: 10px; 
             color: #166534; 
           }
+          .two-column-layout { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin-bottom: 15px; 
+          }
+          .image-column { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+          }
+          .summary-column { 
+            display: flex; 
+            flex-direction: column; 
+          }
           @media print { 
             body { padding: 15px; font-size: 11px; } 
             .section { page-break-inside: avoid; }
@@ -307,27 +382,7 @@ export function LoanCalculator() {
           <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
         </div>
 
-        <div class="section">
-          <h2>Summary</h2>
-          <div class="row">
-            <span class="label">Total Contract Price</span>
-            <span class="value">${formatCurrency(results.price)}</span>
-          </div>
-          <div class="row">
-            <span class="label">Down Payment (${results.downPaymentPercent}%)</span>
-            <span class="value">${formatCurrency(results.downPaymentAmount)}</span>
-          </div>
-          <div class="row">
-            <span class="label">Reservation Fee</span>
-            <span class="value">${formatCurrency(results.reservationFee)}</span>
-          </div>
-          <div class="highlight">
-            <div class="row">
-              <span class="label"><strong>Balance Amount</strong></span>
-              <span class="value">${formatCurrency(results.balanceAmount)}</span>
-            </div>
-          </div>
-        </div>
+        ${unitImageHtml}
 
         <div class="section">
           <h2>Down Payment Options</h2>
@@ -416,7 +471,7 @@ export function LoanCalculator() {
             </div>
 
             <div class="column">
-              <h3>Remaining to Developer (8.5% Interest)</h3>
+              <h3>Outstanding Balance to Developer (8.5% Interest)</h3>
               ${Object.entries(results.remainingAmountMonthly)
                 .map(
                   ([years, amount]) => `
@@ -448,7 +503,7 @@ export function LoanCalculator() {
         </div>
 
         <div class="note">
-          <p className="font-medium text-amber-800 mb-1">Important Notes</p>
+          <p className="font-medium text-amber-800 mb-1 text-xs">Important Notes</p>
             <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-4">
               <li>
                 This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.
@@ -484,6 +539,58 @@ export function LoanCalculator() {
           : agentName
             ? `<p><strong>Prepared by:</strong> ${agentName}</p>`
             : ""
+
+    const unitImageHtml = unitImage
+      ? `<div class="two-column-layout">
+          <div class="image-column">
+            <img src="${unitImage}" alt="${unitName}" style="max-width: 300px; max-height: 225px; border-radius: 8px; border: 1px solid #e5e7eb;" />
+            <p style="font-size: 10px; color: #6b7280; margin-top: 4px;">${unitName}</p>
+          </div>
+          <div class="summary-column">
+            <div class="section">
+              <h2>Summary</h2>
+              <div class="row">
+                <span class="label">Total Contract Price</span>
+                <span class="value">${formatCurrency(results.price)}</span>
+              </div>
+              <div class="row">
+                <span class="label">Down Payment (${results.downPaymentPercent}%)</span>
+                <span class="value">${formatCurrency(results.downPaymentAmount)}</span>
+              </div>
+              <div class="row">
+                <span class="label">Reservation Fee</span>
+                <span class="value">${formatCurrency(results.reservationFee)}</span>
+              </div>
+              <div class="highlight">
+                <div class="row">
+                  <span class="label"><strong>Balance Amount</strong></span>
+                  <span class="value">${formatCurrency(results.balanceAmount)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`
+      : `<div class="section">
+          <h2>Summary</h2>
+          <div class="row">
+            <span class="label">Total Contract Price</span>
+            <span class="value">${formatCurrency(results.price)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Down Payment (${results.downPaymentPercent}%)</span>
+            <span class="value">${formatCurrency(results.downPaymentAmount)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Reservation Fee</span>
+            <span class="value">${formatCurrency(results.reservationFee)}</span>
+          </div>
+          <div class="highlight">
+            <div class="row">
+              <span class="label"><strong>Balance Amount</strong></span>
+              <span class="value">${formatCurrency(results.balanceAmount)}</span>
+            </div>
+          </div>
+        </div>`
 
     const htmlContent = `
       <!DOCTYPE html>
@@ -562,6 +669,21 @@ export function LoanCalculator() {
             font-size: 10px; 
             color: #166534; 
           }
+          .two-column-layout { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin-bottom: 15px; 
+          }
+          .image-column { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+          }
+          .summary-column { 
+            display: flex; 
+            flex-direction: column; 
+          }
         </style>
       </head>
       <body>
@@ -573,27 +695,7 @@ export function LoanCalculator() {
           <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
         </div>
 
-        <div class="section">
-          <h2>Summary</h2>
-          <div class="row">
-            <span class="label">Total Contract Price</span>
-            <span class="value">${formatCurrency(results.price)}</span>
-          </div>
-          <div class="row">
-            <span class="label">Down Payment (${results.downPaymentPercent}%)</span>
-            <span class="value">${formatCurrency(results.downPaymentAmount)}</span>
-          </div>
-          <div class="row">
-            <span class="label">Reservation Fee</span>
-            <span class="value">${formatCurrency(results.reservationFee)}</span>
-          </div>
-          <div class="highlight">
-            <div class="row">
-              <span class="label"><strong>Balance Amount</strong></span>
-              <span class="value">${formatCurrency(results.balanceAmount)}</span>
-            </div>
-          </div>
-        </div>
+        ${unitImageHtml}
 
         <div class="section">
           <h2>Downpayment Options</h2>
@@ -682,7 +784,7 @@ export function LoanCalculator() {
             </div>
 
             <div class="column">
-              <h3>Remaining to Developer (8.5% Interest)</h3>
+              <h3>Outstanding Balance to Developer (8.5% Interest)</h3>
               ${Object.entries(results.remainingAmountMonthly)
                 .map(
                   ([years, amount]) => `
@@ -742,7 +844,7 @@ export function LoanCalculator() {
     iframe.style.left = '-9999px'
     iframe.style.top = '-9999px'
     iframe.style.width = '800px'
-    iframe.style.height = '2000px'
+    iframe.style.height = '2500px'
     iframe.style.border = 'none'
     document.body.appendChild(iframe)
 
@@ -762,8 +864,8 @@ export function LoanCalculator() {
     try {
       const canvas = await html2canvas(iframeDoc.body, {
         scale: 2,
-        useCORS: false,
-        allowTaint: false,
+        useCORS: true,
+        allowTaint: true,
         backgroundColor: '#ffffff',
         width: 800,
         height: iframeDoc.body.scrollHeight
@@ -883,6 +985,24 @@ export function LoanCalculator() {
       {/* Results */}
       {results && (
         <div ref={resultsRef} id="loan-results" className="space-y-3">
+          {/* Unit Image */}
+          {unitImage && (
+            <Card>
+              <CardContent className="p-4">
+                <div className="aspect-[4/3] max-w-md mx-auto overflow-hidden rounded-lg border">
+                  <Image
+                    src={unitImage}
+                    alt={unitName}
+                    width={400}
+                    height={300}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <p className="text-center text-sm text-muted-foreground mt-2">{unitName}</p>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Summary Card */}
           <Card className="border-primary/20 bg-primary/5">
             <CardContent className="p-2">
@@ -1045,7 +1165,7 @@ export function LoanCalculator() {
                   <CardHeader className="pb-2">
                     <CardTitle className="flex items-center gap-2 text-base">
                       <Home className="h-4 w-4" />
-                      Remaining to Developer (8.5% Interest)
+                      Outstanding Balance to Developer (8.5% Interest)
                     </CardTitle>
                     <p className="text-xs text-muted-foreground">
                       Amount: {formatCurrency(results.remainingForDeveloper)}
