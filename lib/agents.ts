@@ -82,6 +82,7 @@ export const agents: Agent[] = [
   { id: "m10-5", name: "Nicole C. Chavez", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Salesperson", team: "Mavericks" },
   { id: "m10-6", name: "Allyson C. Rivada", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Salesperson", team: "Mavericks" },
   { id: "m10-7", name: "Cynthia B. De las Alas", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Broker", team: "Mavericks" },
+  { id: "m10-8", name: "Lyn A. Hidalgo", brokerage: "De Laber Realty & Marketing Enterprises", classification: "Salesperson", team: "Mavericks" },
 
 
   // Adeg & Co.REB 
