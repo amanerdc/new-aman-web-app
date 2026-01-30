@@ -4,14 +4,15 @@ import { Home, MapPin, Calculator, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { lotOnlyProperties } from "@/lib/lot-only-data"
+import { getLotOnlyProperties } from "@/lib/db"
 
 export const metadata = {
   title: "Lot Only Properties | Aman Group of Companies",
   description: "Browse available lot only properties from Aman Group of Companies",
 }
 
-export default function LotOnlyPage() {
+export default async function LotOnlyPage() {
+  const lotOnlyProperties = await getLotOnlyProperties()
   return (
     <div className="p-12">
       <div className="container">

@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Home, Send, MapPin, Phone, Mail, Clock, User, Building2, MessageSquare, NotebookTabs } from "lucide-react"
@@ -14,11 +14,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AgentTools } from "@/components/agent-tools"
 import { getAgentById } from "@/lib/agents"
+import type { Agent } from "@/lib/agents"
 
 export default function ContactPage() {
   const searchParams = useSearchParams()
   const agentId = searchParams.get("agent")
-  const agent = agentId ? getAgentById(agentId) : null
+  const [agent, setAgent] = useState<Agent | null>(null)
+  const [agentLoading, setAgentLoading] = useState(!!agentId)
+
+  useEffect(() => {
+    const loadAgent = async () => {
+      if (agentId) {
+        const foundAgent = await getAgentById(agentId)
+        setAgent(foundAgent || null)
+      }
+      setAgentLoading(false)
+    }
+    loadAgent()
+  }, [agentId])
 
   const [formData, setFormData] = useState({
     name: "",
@@ -170,8 +183,11 @@ export default function ContactPage() {
                       <SelectValue placeholder="Select project location" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="palm-village">Palm Village</SelectItem>
                       <SelectItem value="naga-urban-residence">Naga Urban Residences</SelectItem>
+                      <SelectItem value="palm-village">Palm Village</SelectItem>
+                      <SelectItem value="parkview-executive-townhomes">Parkview Executive Townhomes</SelectItem>
+                      <SelectItem value="haciendas-de-naga">Haciendas de Naga</SelectItem>
+                      <SelectItem value="parkview-employees-village">Parkview Employees' Village</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

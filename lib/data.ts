@@ -1420,9 +1420,9 @@ export const pagibigMaxLoan: Record<PropertyOption, number | null> = {
 export const downPaymentOptions = [20, 25, 30, 35, 40, 50]
 
 export const inHouseFactorRates: Record<number, number> = {
-  5: 0.0123985688874511,
-  10: 0.00984739557925592,
-  15: 0.00857422866500172,
+  5: 0.0205165313270512,
+  10: 0.0123985688874511,
+  15: 0.00984739557925592,
 }
 
 export const pagibigFactorRates: Record<number, number> = {

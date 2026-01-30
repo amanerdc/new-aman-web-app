@@ -6,20 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { modelHouseSeries } from "@/lib/data"
-import { getAgentById } from "@/lib/agents"
+import { getUnitById, getSeriesById } from "@/lib/db"
 import { BookViewingForm } from "@/components/book-viewing-form"
 import { AgentTools } from "@/components/agent-tools"
-
-export async function generateStaticParams() {
-  const params: { seriesId: string; unitId: string }[] = []
-  Object.entries(modelHouseSeries).forEach(([seriesId, series]) => {
-    series.units.forEach((unit) => {
-      params.push({ seriesId, unitId: unit.id })
-    })
-  })
-  return params
-}
 
 export async function generateMetadata({
   params,
@@ -27,12 +16,11 @@ export async function generateMetadata({
   params: Promise<{ seriesId: string; unitId: string }>
 }) {
   const { seriesId, unitId } = await params
-  const series = modelHouseSeries[seriesId]
-  if (!series) return { title: "Not Found" }
-  const unit = series.units.find((u) => u.id === unitId)
-  if (!unit) return { title: "Not Found" }
+  const unit = await getUnitById(unitId)
+  const series = await getSeriesById(seriesId)
+  if (!unit || !series) return { title: "Not Found" }
   return {
-    title: `${unit.seriesName} - ${unit.name} | Aman Group of Companies`,
+    title: `${series.name} - ${unit.name} | Aman Group of Companies`,
     description: unit.description,
   }
 }
@@ -45,30 +33,24 @@ export default async function UnitDetailPage({
   searchParams: Promise<{ agent?: string }>
 }) {
   const { seriesId, unitId } = await params
-  const { agent: agentId } = await searchParams
-  const series = modelHouseSeries[seriesId]
+  const { agent: agentParam } = await searchParams
+  const unit = await getUnitById(unitId)
+  const series = await getSeriesById(seriesId)
 
-  if (!series) {
+  if (!unit || !series) {
     notFound()
   }
 
-  const unit = series.units.find((u) => u.id === unitId)
-
-  if (!unit) {
-    notFound()
-  }
-
-  const agent = agentId ? getAgentById(agentId) : null
-  const specifications = unit.specifications || series.specifications
+  const specifications = series.specifications
 
   return (
-    <div className="py-8">
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="container max-w-6xl mx-auto">
         {/* Back Button */}
         <Button asChild variant="ghost" className="mb-6 -ml-2">
           <Link href={`/properties/${seriesId}`} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to {series.name}
+            Back to Series
           </Link>
         </Button>
 
@@ -77,8 +59,8 @@ export default async function UnitDetailPage({
           <div className="space-y-4">
             <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
               <Image
-                src={unit.imageUrl || "/placeholder.svg"}
-                alt={`${unit.seriesName} - ${unit.name}`}
+                src={unit.image_url || "/placeholder.svg"}
+                alt={unit.name}
                 width={800}
                 height={600}
                 className="h-full w-full object-cover"
@@ -90,11 +72,10 @@ export default async function UnitDetailPage({
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-2 mb-3 flex-wrap"> 
-                {unit.isRFO && <Badge variant="outline">Ready for Occupancy</Badge>}
-                {series.loftReady && <Badge variant="outline">Loft Ready</Badge>}
+                {unit.is_rfo && <Badge variant="outline">Ready for Occupancy</Badge>}
               </div>
               <h1 className="text-3xl font-bold tracking-tight mb-2">
-                {unit.seriesName} - {unit.name}
+                {series.name} - {unit.name}
               </h1>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
@@ -110,25 +91,28 @@ export default async function UnitDetailPage({
             <div className="space-y-4">
               <h3 className="font-semibold">Pricing Details</h3>
               <div className="grid gap-3">
-                <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                  <span className="text-muted-foreground">Lot Only Price</span>
-                  <span className="font-semibold">
-                    ₱{unit.lotOnlyPrice.toLocaleString('en-PH', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
-                  <span className="text-muted-foreground">House Construction Price</span>
-                  <span className="font-semibold">
-                    ₱{unit.houseConstructionPrice.toLocaleString('en-PH', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>
-                </div>
+                {unit.lot_only_price && (
+                  <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
+                    <span className="text-muted-foreground">Lot Only Price</span>
+                    <span className="font-semibold">
+                      ₱{unit.lot_only_price.toLocaleString('en-PH', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                )}
+                {unit.house_construction_price && (
+                  <div className="flex justify-between items-center p-3 bg-secondary rounded-lg">
+                    <span className="text-muted-foreground">House Construction Price</span>
+                    <span className="font-semibold">
+                      ₱{unit.house_construction_price.toLocaleString('en-PH', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex justify-between items-center p-4 bg-primary/10 rounded-lg border border-primary/20">
                   <span className="font-medium">Total Contract Price*</span>
@@ -146,7 +130,7 @@ export default async function UnitDetailPage({
 
             <Button asChild size="lg" className="w-full gap-2">
               <Link
-                href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(unit.seriesName + " - " + unit.name)}${agentId ? `&agent=${agentId}` : ""}`}
+                href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(series.name + ' - ' + unit.name)}&unitImage=${encodeURIComponent(unit.image_url || '')}${agentParam ? `&agent=${agentParam}` : ''}`}
               >
                 <Calculator className="h-5 w-5" />
                 Calculate Loan
@@ -156,24 +140,32 @@ export default async function UnitDetailPage({
         </div>
 
         {/* Project Info */}
-        <Card className="space-y-1 mb-8">
+        <Card className="mb-8">
           <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
+              {series.project && (
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Project</h4>
+                  <p className="font-semibold">{series.project}</p>
+                </div>
+              )}
+              {series.developer && (
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Developer</h4>
+                  <p className="font-semibold">{series.developer}</p>
+                </div>
+              )}
+              {series.floorArea && (
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Floor Area</h4>
+                  <p className="font-semibold">{series.floorArea}</p>
+                </div>
+              )}
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Project</p>
-                <p className="font-semibold">{series.project}</p>
+                <Button asChild variant="outline" className="w-full hover:bg-primary hover:text-primary-foreground">
+                  <Link href={`/contact${agentParam ? `?agent=${agentParam}` : ''}`}>Inquire Now</Link>
+                </Button>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Developer</p>
-                <p className="font-semibold">{series.developer}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">Floor Area</p>
-                <p className="font-semibold">{series.floorArea}</p>
-              </div>
-              <Button variant="outline" asChild>
-                <Link href="/contact">Inquire Now</Link>
-              </Button>
             </div>
           </CardContent>
         </Card>
@@ -181,7 +173,7 @@ export default async function UnitDetailPage({
         {/* Features and Specifications */}
         <div className="grid gap-6 lg:grid-cols-2 mb-8 justify-center">
           {/* Features */}
-          <Card>
+          <Card className="min-h-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -190,10 +182,10 @@ export default async function UnitDetailPage({
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {unit.features.map((feature, index) => (
+                {(unit.features || []).map((feature: any, index: number) => (
                   <li key={index} className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">{feature}</span>
+                    <span className="text-sm">{typeof feature === 'string' ? feature : feature}</span>
                   </li>
                 ))}
               </ul>
@@ -201,32 +193,36 @@ export default async function UnitDetailPage({
           </Card>
 
           {/* Specifications */}
-          <Card>
+          <Card className="min-h-full">
             <CardHeader>
               <CardTitle>Construction Specifications</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {Object.entries(specifications).map(([key, value]) => (
-                  <div key={key} className="space-y-1">
-                    <h4 className="font-medium capitalize text-sm text-primary">
-                      {key.replace(/([A-Z])/g, " $1").trim()}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">{value}</p>
-                  </div>
-                ))}
+                {specifications && Object.entries(specifications).length > 0 ? (
+                  Object.entries(specifications).map(([key, value]: [string, any]) => (
+                    <div key={key} className="space-y-1">
+                      <h4 className="font-medium capitalize text-sm text-primary">
+                        {key.replace(/([A-Z])/g, " $1").trim()}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">{String(value)}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">No specifications available</p>
+                )}
               </div>
             </CardContent>
           </Card>
         </div>
 
         <div className="mb-8">
-          <BookViewingForm propertyName={`${unit.seriesName} - ${unit.name}`} agentId={agentId} />
+          <BookViewingForm propertyName={`${series.name} - ${unit.name}`} agentId={agentParam} />
         </div>
 
         <div className="space-y-1 mb-8">
             {/* Floor Plan */}
-            {unit.floorPlanPdfId && (
+            {unit.floor_plan_pdf_id && (
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base">Floor Plan</CardTitle>
@@ -234,7 +230,7 @@ export default async function UnitDetailPage({
                 <CardContent>
                   <Button asChild variant="outline" className="w-full gap-2 bg-transparent">
                     <a
-                      href={`https://drive.google.com/file/d/${unit.floorPlanPdfId}/view`}
+                      href={`https://drive.google.com/file/d/${unit.floor_plan_pdf_id}/view`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -248,31 +244,28 @@ export default async function UnitDetailPage({
         </div>
 
         {/* Video Walkthrough */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Play className="h-5 w-5" />
-              Video Walkthrough
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {unit.walkthrough && unit.walkthrough !== "https://www.youtube.com/embed/dQw4w9WgXcQ" ? (
+        {unit.walkthrough && unit.walkthrough !== "https://www.youtube.com/embed/dQw4w9WgXcQ" && unit.walkthrough.trim() ? (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Play className="h-5 w-5" />
+                Video Walkthrough
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               <div className="aspect-video rounded-lg overflow-hidden">
                 <iframe
                   src={unit.walkthrough}
-                  title={`${unit.seriesName} - ${unit.name} Walkthrough`}
+                  title={`${unit.name} Walkthrough`}
                   className="w-full h-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
+                  loading="lazy"
                 />
               </div>
-            ) : (
-              <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                <p className="text-gray-500 text-lg">No video available</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : null}
 
         <AgentTools currentPath={`/properties/${seriesId}/${unitId}`} />
       </div>

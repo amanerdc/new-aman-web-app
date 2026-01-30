@@ -3,10 +3,17 @@ import Image from "next/image"
 import { ArrowRight, Building2, Calculator, Home, CheckCircle2, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { modelHouseSeries } from "@/lib/data"
+import { getSeries, getUnits } from "@/lib/db"
 
-export default function HomePage() {
-  const featuredSeries = Object.values(modelHouseSeries).slice(0, 4)
+export default async function HomePage() {
+  const allSeries = await getSeries()
+  const allUnits = await getUnits()
+  const featuredSeries = allSeries.slice(0, 4)
+
+  // Helper function to get units for a series
+  const getUnitsForSeries = (seriesId: string) => {
+    return allUnits.filter(unit => unit.series_id === seriesId)
+  }
 
   return (
     <div className="flex flex-col">
@@ -112,34 +119,40 @@ export default function HomePage() {
               </Button>
             </div>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {featuredSeries.map((series) => (
-                <Link key={series.id} href={`/properties/${series.id}`} className="group">
-                  <Card className="overflow-hidden border-border/50 transition-all hover:border-primary/50 hover:shadow-lg">
-                    <div className="aspect-[4/3] overflow-hidden">
-                      <Image
-                        src={series.imageUrl || "/placeholder.svg"}
-                        alt={series.name}
-                        width={400}
-                        height={300}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                      />
-                    </div>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">
-                          {series.units[0]?.floorArea || 'Various sizes'}
-                        </span>
+              {featuredSeries.map((series) => {
+                const seriesUnits = getUnitsForSeries(series.id)
+                const minPrice = seriesUnits.length > 0 ? Math.min(...seriesUnits.map(u => u.price)) : 0
+                const floorArea = seriesUnits[0]?.floor_area || 'Various sizes'
+                
+                return (
+                  <Link key={series.id} href={`/properties/${series.id}`} className="group">
+                    <Card className="overflow-hidden border-border/50 transition-all hover:border-primary/50 hover:shadow-lg">
+                      <div className="aspect-[4/3] overflow-hidden">
+                        <Image
+                          src={series.imageUrl || "/placeholder.svg"}
+                          alt={series.name}
+                          width={400}
+                          height={300}
+                          className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        />
                       </div>
-                      <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">{series.name}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{series.description}</p>
-                      <div className="mt-3 pt-3 border-t border-border">
-                        <p className="text-sm text-muted-foreground">Starting at</p>
-                        <p className="text-lg font-bold text-primary">₱{Math.min(...series.units.map(u => u.price)).toLocaleString()}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">
+                            {floorArea}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">{series.name}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{series.description}</p>
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <p className="text-sm text-muted-foreground">Starting at</p>
+                          <p className="text-lg font-bold text-primary">₱{minPrice.toLocaleString()}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )
+              })}
             </div>
             <div className="mt-8 text-center sm:hidden">
               <Button asChild variant="outline" className="gap-2 bg-transparent">

@@ -7,16 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { lotOnlyProperties, getLotOnlyById } from "@/lib/lot-only-data"
-import { getAgentById } from "@/lib/agents"
+import { getLotOnlyById } from "@/lib/db"
 import { BookViewingForm } from "@/components/book-viewing-form"
 import { AgentTools } from "@/components/agent-tools"
-
-export async function generateStaticParams() {
-  return lotOnlyProperties.map((lot) => ({
-    lotId: lot.id,
-  }))
-}
 
 export async function generateMetadata({
   params,
@@ -24,7 +17,7 @@ export async function generateMetadata({
   params: Promise<{ lotId: string }>
 }) {
   const { lotId } = await params
-  const lot = getLotOnlyById(lotId)
+  const lot = await getLotOnlyById(lotId)
   if (!lot) return { title: "Not Found" }
   return {
     title: `${lot.name} | Aman Group of Companies`,
@@ -40,14 +33,12 @@ export default async function LotDetailPage({
   searchParams: Promise<{ agent?: string }>
 }) {
   const { lotId } = await params
-  const { agent: agentId } = await searchParams
-  const lot = getLotOnlyById(lotId)
+  const { agent: agentParam } = await searchParams
+  const lot = await getLotOnlyById(lotId)
 
   if (!lot) {
     notFound()
   }
-
-  const agent = agentId ? getAgentById(agentId) : null
 
   const utilityIcons: Record<string, React.ReactNode> = {
     Water: <Droplets className="h-4 w-4" />,
@@ -146,7 +137,7 @@ export default async function LotDetailPage({
 
             <Button asChild size="lg" className="w-full gap-2">
               <Link
-                href={`/calculator?price=${lot.price}&unit=${encodeURIComponent(lot.name)}&option=${lot.propertyOption}`}
+                href={`/calculator?price=${lot.price}&unit=${encodeURIComponent(lot.name)}&option=${lot.propertyOption}${agentParam ? `&agent=${agentParam}` : ''}`}
               >
                 <Calculator className="h-5 w-5" />
                 Calculate Loan
@@ -158,23 +149,23 @@ export default async function LotDetailPage({
         {/* Project Info */}
         <Card className="mb-8">
           <CardContent className="pt-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Project</p>
+                <p className="text-sm text-muted-foreground mb-2">Project</p>
                 <p className="font-semibold">{lot.project}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Developer</p>
+                <p className="text-sm text-muted-foreground mb-2">Developer</p>
                 <p className="font-semibold" style={{ color: lot.developerColor }}>
                   {lot.developer}
                 </p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Property Type</p>
+                <p className="text-sm text-muted-foreground mb-2">Property Type</p>
                 <p className="font-semibold">{lot.propertyType}</p>
               </div>
-              <Button variant="outline" asChild>
-                <Link href="/contact">Inquire Now</Link>
+              <Button asChild variant="outline" className="w-full hover:bg-primary hover:text-primary-foreground">
+                <Link href={`/contact${agentParam ? `?agent=${agentParam}` : ''}`}>Inquire Now</Link>
               </Button>
             </div>
           </CardContent>
@@ -192,7 +183,7 @@ export default async function LotDetailPage({
             </CardHeader>
             <CardContent>
               <ul className="space-y-2">
-                {lot.features.map((feature, index) => (
+                {(lot.features || []).map((feature: string, index: number) => (
                   <li key={index} className="flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <span className="text-sm">{feature}</span>
@@ -211,7 +202,7 @@ export default async function LotDetailPage({
               <div>
                 <h4 className="font-medium text-sm mb-2">Available Utilities</h4>
                 <div className="flex flex-wrap gap-2">
-                  {lot.utilities.map((utility, index) => (
+                  {(lot.utilities || []).map((utility: string, index: number) => (
                     <Badge key={index} variant="outline" className="gap-1">
                       {utilityIcons[utility]}
                       {utility}
@@ -223,7 +214,7 @@ export default async function LotDetailPage({
               <div>
                 <h4 className="font-medium text-sm mb-2">Nearby Amenities</h4>
                 <div className="flex flex-wrap gap-2">
-                  {lot.nearbyAmenities.map((amenity, index) => (
+                  {(lot.nearbyAmenities || []).map((amenity: string, index: number) => (
                     <Badge key={index} variant="secondary">
                       {amenity}
                     </Badge>
@@ -236,7 +227,7 @@ export default async function LotDetailPage({
 
         {/* Book a Viewing */}
         <div className="mb-8">
-          <BookViewingForm propertyName={lot.name} agentId={agentId} />
+          <BookViewingForm propertyName={lot.name} agentId={agentParam} />
         </div>
 
         <AgentTools currentPath={`/lot-only/${lot.id}`} />

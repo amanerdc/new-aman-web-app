@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { modelHouseSeries, type Unit, type ModelHouseSeries } from "@/lib/data"
+import { getUnits, getSeries } from "@/lib/db"
 
 export const metadata = {
   title: "Ready for Occupancy Units | Aman Group of Companies",
@@ -13,23 +13,20 @@ export const metadata = {
     "Browse our ready for occupancy (RFO) units - move-in ready homes with complete finishes at Parkview Naga Urban Residence.",
 }
 
-// Get all RFO units across all series
-function getRFOUnits(): { unit: Unit; series: ModelHouseSeries }[] {
-  const rfoUnits: { unit: Unit; series: ModelHouseSeries }[] = []
-
-  Object.values(modelHouseSeries).forEach((series) => {
-    series.units.forEach((unit) => {
-      if (unit.isRFO) {
-        rfoUnits.push({ unit, series })
-      }
-    })
-  })
-
-  return rfoUnits
-}
-
-export default function RFOPage() {
-  const rfoUnits = getRFOUnits()
+export default async function RFOPage() {
+  const allUnits = await getUnits()
+  const allSeries = await getSeries()
+  
+  // Create a map for quick series lookup
+  const seriesMap = new Map(allSeries.map(s => [s.id, s]))
+  
+  // Filter for RFO units and add series info
+  const rfoUnits = allUnits
+    .filter(unit => unit.is_rfo === true)
+    .map(unit => ({
+      ...unit,
+      seriesName: seriesMap.get(unit.series_id)?.name || 'Unknown Series'
+    }))
 
   return (
     <div className="p-12">
@@ -103,7 +100,7 @@ export default function RFOPage() {
           <TabsContent value="units" className="space-y-6">
             {rfoUnits.length > 0 ? (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 justify-center">
-                {rfoUnits.map(({ unit, series }) => (
+                {rfoUnits.map((unit) => (
                   <Card
                     key={unit.id}
                     className="overflow-hidden border-border/50 hover:border-primary/50 transition-all"
@@ -139,11 +136,11 @@ export default function RFOPage() {
 
                         <div className="flex gap-2">
                           <Button asChild variant="outline" className="flex-1 bg-transparent">
-                            <Link href={`/properties/${series.id}/${unit.id}`}>View Details</Link>
+                            <Link href={`/properties/${unit.series_id}/${unit.id}`}>View Details</Link>
                           </Button>
                           <Button asChild className="flex-1">
                             <Link
-                              href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(unit.seriesName + " - " + unit.name)}`}
+                              href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(unit.seriesName + ' - ' + unit.name)}&unitImage=${encodeURIComponent(unit.imageUrl || '')}`}
                             >
                               Calculate Loan
                             </Link>

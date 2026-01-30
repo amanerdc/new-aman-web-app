@@ -35,8 +35,8 @@ type LoanResults = {
   option1RequiredIncome: number
   option2Year1Monthly: number
   option2Year2WithInterest: number
+  option2Year2WithInterestRequiredIncome: number
   option2Year2Waived: number
-  option2Year2WaivedRequiredIncome: number
   balanceAmount: number
   inHouseMonthly: Record<number, number>
   inHouseRequiredIncome: Record<number, number>
@@ -72,26 +72,34 @@ export function LoanCalculator() {
     const unitParam = searchParams.get("unit")
     const optionParam = searchParams.get("option") as PropertyOption | null
     const agentParam = searchParams.get("agent")
+    const unitImageParam = searchParams.get("unitImage")
 
     if (priceParam) {
       setPrice(priceParam)
     }
     if (unitParam) {
       setUnitName(unitParam)
-      // Find unit image
-      const unitData = findUnitByDisplayName(unitParam)
-      if (unitData) {
-        setUnitImage(unitData.unit.imageUrl)
+      // Use provided image or find unit image
+      if (unitImageParam) {
+        setUnitImage(decodeURIComponent(unitImageParam))
+      } else {
+        const unitData = findUnitByDisplayName(unitParam)
+        if (unitData) {
+          setUnitImage(unitData.unit.imageUrl)
+        }
       }
     }
     if (optionParam && propertyOptions.some((opt) => opt.value === optionParam)) {
       setPropertyOption(optionParam)
     }
     if (agentParam) {
-      const agent = getAgentById(agentParam)
-      if (agent) {
-        setAgentName(agent.name)
+      const loadAgent = async () => {
+        const agent = await getAgentById(agentParam)
+        if (agent) {
+          setAgentName(agent.name)
+        }
       }
+      loadAgent()
     }
   }, [searchParams])
 
@@ -114,7 +122,7 @@ export function LoanCalculator() {
     const option2Year1 = year1Payable / 12
     const option2Year2Interest = year2Payable * year2InterestRate
     const option2Year2Waived = year2Payable / 12
-    const option2Year2WaivedRequiredIncome = option2Year2Waived / 0.40
+    const option2Year2WithInterestRequiredIncome = option2Year2Interest / 0.40
 
     // In-House Financing
     const inHouseMonthly: Record<number, number> = {}
@@ -177,7 +185,7 @@ export function LoanCalculator() {
       option2Year1Monthly: option2Year1,
       option2Year2WithInterest: option2Year2Interest,
       option2Year2Waived: option2Year2Waived,
-      option2Year2WaivedRequiredIncome,
+      option2Year2WithInterestRequiredIncome,
       balanceAmount: balance,
       inHouseMonthly,
       inHouseRequiredIncome,
@@ -410,12 +418,12 @@ export function LoanCalculator() {
                 <span class="value">${formatCurrency(results.option2Year2WithInterest)}</span>
               </div>
               <div class="row">
-                <span class="label">Year 2 (Waived Interest) - Monthly</span>
-                <span class="value">${formatCurrency(results.option2Year2Waived)}</span>
+                <span class="label">Required Income</span>
+                <span class="value">${formatCurrency(results.option2Year2WithInterestRequiredIncome)}</span>
               </div>
               <div class="row">
-                <span class="label">Required Income</span>
-                <span class="value">${formatCurrency(results.option2Year2WaivedRequiredIncome)}</span>
+                <span class="label">Year 2 (Waived Interest) - Monthly</span>
+                <span class="value">${formatCurrency(results.option2Year2Waived)}</span>
               </div>
             </div>
           </div>
@@ -528,6 +536,22 @@ export function LoanCalculator() {
     printWindow.print()
   }
 
+  // Helper function to convert image URL to data URL
+  const imageUrlToDataUrl = async (url: string): Promise<string> => {
+    try {
+      const response = await fetch(url)
+      const blob = await response.blob()
+      return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.readAsDataURL(blob)
+      })
+    } catch (error) {
+      console.error('Error converting image to data URL:', error)
+      return ''
+    }
+  }
+
   const exportToImage = async (format: 'jpg' | 'png') => {
     if (!results) return
 
@@ -540,10 +564,16 @@ export function LoanCalculator() {
             ? `<p><strong>Prepared by:</strong> ${agentName}</p>`
             : ""
 
-    const unitImageHtml = unitImage
+    // Convert image to data URL if available
+    let unitImageDataUrl = ''
+    if (unitImage) {
+      unitImageDataUrl = await imageUrlToDataUrl(unitImage)
+    }
+
+    const unitImageHtml = unitImageDataUrl
       ? `<div class="two-column-layout">
           <div class="image-column">
-            <img src="${unitImage}" alt="${unitName}" style="max-width: 300px; max-height: 225px; border-radius: 8px; border: 1px solid #e5e7eb;" />
+            <img src="${unitImageDataUrl}" alt="${unitName}" style="max-width: 300px; max-height: 225px; border-radius: 8px; border: 1px solid #e5e7eb;" />
             <p style="font-size: 10px; color: #6b7280; margin-top: 4px;">${unitName}</p>
           </div>
           <div class="summary-column">
@@ -723,12 +753,12 @@ export function LoanCalculator() {
                 <span class="value">${formatCurrency(results.option2Year2WithInterest)}</span>
               </div>
               <div class="row">
-                <span class="label">Year 2 (Waived Interest) - Monthly</span>
-                <span class="value">${formatCurrency(results.option2Year2Waived)}</span>
+                <span class="label">Required Income</span>
+                <span class="value">${formatCurrency(results.option2Year2WithInterestRequiredIncome)}</span>
               </div>
               <div class="row">
-                <span class="label">Required Income</span>
-                <span class="value">${formatCurrency(results.option2Year2WaivedRequiredIncome)}</span>
+                <span class="label">Year 2 (Waived Interest) - Monthly</span>
+                <span class="value">${formatCurrency(results.option2Year2Waived)}</span>
               </div>
             </div>
           </div>
@@ -1073,6 +1103,11 @@ export function LoanCalculator() {
                           <p className="text-xs text-muted-foreground">Monthly Payment</p>
                           <p className="text-sm font-bold">{formatCurrency(results.option2Year2WithInterest)}</p>
                         </div>
+                        <Separator orientation="vertical" className="h-8 mx-2" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Required Income</p>
+                          <p className="text-sm font-bold text-primary">{formatCurrency(results.option2Year2WithInterestRequiredIncome)}</p>
+                        </div>
                       </div>
                     </div>
                     <div className="border rounded-md p-2 bg-gray-50">
@@ -1081,11 +1116,6 @@ export function LoanCalculator() {
                         <div>
                           <p className="text-xs text-muted-foreground">Monthly Payment</p>
                           <p className="text-sm font-bold">{formatCurrency(results.option2Year2Waived)}</p>
-                        </div>
-                        <Separator orientation="vertical" className="h-8 mx-2" />
-                        <div>
-                          <p className="text-xs text-muted-foreground">Required Income</p>
-                          <p className="text-sm font-bold text-primary">{formatCurrency(results.option2Year2WaivedRequiredIncome)}</p>
                         </div>
                       </div>
                     </div>

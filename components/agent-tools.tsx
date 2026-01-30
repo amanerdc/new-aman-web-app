@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronDown, ChevronUp, LinkIcon, Copy, Check, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,8 +19,9 @@ export function AgentTools({ currentPath }: AgentToolsProps) {
   const [agentName, setAgentName] = useState("")
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  const generateLink = () => {
+  const generateLink = async () => {
     if (!agentId.trim()) {
       setError("Please enter an Agent ID")
       setGeneratedLink("")
@@ -28,7 +29,10 @@ export function AgentTools({ currentPath }: AgentToolsProps) {
       return
     }
 
-    const agent = getAgentById(agentId.trim())
+    setLoading(true)
+    const agent = await getAgentById(agentId.trim())
+    setLoading(false)
+    
     if (!agent) {
       setError("Agent ID not found")
       setGeneratedLink("")
@@ -78,9 +82,9 @@ export function AgentTools({ currentPath }: AgentToolsProps) {
                     setError("")
                   }}
                 />
-                <Button onClick={generateLink}>
+                <Button onClick={generateLink} disabled={loading}>
                   <LinkIcon className="h-4 w-4 mr-2" />
-                  Generate
+                  {loading ? "..." : "Generate"}
                 </Button>
               </div>
               {error && <p className="text-sm text-destructive">{error}</p>}

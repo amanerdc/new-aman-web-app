@@ -1,14 +1,33 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Menu, Home, Calculator, Building2, ChevronDown, Users, Phone, MapPin, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { supabase } from "@/lib/supabase"
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setIsLoggedIn(!!session)
+    }
+    
+    checkAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session)
+    })
+
+    return () => subscription?.unsubscribe()
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -40,33 +59,35 @@ export function Header() {
             Our Developers
           </Link>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              <Building2 className="h-4 w-4" />
-              Properties
-              <ChevronDown className="h-3 w-3" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem asChild>
-                <Link href="/properties" className="flex items-center gap-2">
-                  <Home className="h-4 w-4" />
-                  Model Houses
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/lot-only" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Lot Only
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/rfo" className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4" />
-                  Ready for Occupancy
-                </Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {isMounted && (
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                <Building2 className="h-4 w-4" />
+                Properties
+                <ChevronDown className="h-3 w-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem asChild>
+                  <Link href="/properties" className="flex items-center gap-2">
+                    <Home className="h-4 w-4" />
+                    Model Houses
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/lot-only" className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Lot Only
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/rfo" className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Ready for Occupancy
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
           <Link
             href="/calculator"
@@ -83,18 +104,28 @@ export function Header() {
             <Phone className="h-4 w-4" />
             Contact
           </Link>
+
+          {isMounted && isLoggedIn && (
+            <Link
+              href="/admin"
+              className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+            >
+              Admin
+            </Link>
+          )}
         </nav>
 
         {/* Mobile Navigation */}
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
-            <nav className="flex flex-col gap-4 mt-8">
+        {isMounted && (
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <nav className="flex flex-col gap-4 mt-8">
               <Link
                 href="/"
                 onClick={() => setIsOpen(false)}
@@ -151,9 +182,19 @@ export function Header() {
                 <Phone className="h-5 w-5" />
                 Contact
               </Link>
+              {isMounted && isLoggedIn && (
+                <Link
+                  href="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-lg font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-primary"
+                >
+                  Admin
+                </Link>
+              )}
             </nav>
           </SheetContent>
-        </Sheet>
+          </Sheet>
+        )}
       </div>
     </header>
   )

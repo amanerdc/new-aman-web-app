@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Calendar, User, Mail, Phone, MessageSquare, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 
 import { getAgentById } from "@/lib/agents"
+import type { Agent } from "@/lib/agents"
 
 type BookViewingFormProps = {
   propertyName: string
@@ -19,7 +20,8 @@ type BookViewingFormProps = {
 }
 
 export function BookViewingForm({ propertyName, agentId }: BookViewingFormProps) {
-  const agent = agentId ? getAgentById(agentId) : null
+  const [agent, setAgent] = useState<Agent | null>(null)
+  const [agentLoading, setAgentLoading] = useState(!!agentId)
   const [date, setDate] = useState<Date | undefined>(undefined)
   const [formData, setFormData] = useState({
     name: "",
@@ -29,6 +31,17 @@ export function BookViewingForm({ propertyName, agentId }: BookViewingFormProps)
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+
+  useEffect(() => {
+    const loadAgent = async () => {
+      if (agentId) {
+        const foundAgent = await getAgentById(agentId)
+        setAgent(foundAgent || null)
+      }
+      setAgentLoading(false)
+    }
+    loadAgent()
+  }, [agentId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

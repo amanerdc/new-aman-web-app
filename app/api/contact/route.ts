@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const { name, email, phone, projectLocation, propertyInterest, message, referredBy } = await request.json()
 
     // Get agent details if referredBy is provided
-    const agent = referredBy ? getAgentById(referredBy) : null
+    const agent = referredBy ? await getAgentById(referredBy) : null
 
     // Validate required fields
     if (!name || !email || !phone || !projectLocation) {

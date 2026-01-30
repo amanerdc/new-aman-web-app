@@ -6,27 +6,22 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { modelHouseSeries } from "@/lib/data"
-
-// export async function generateStaticParams() {
-//   return Object.keys(modelHouseSeries).map((seriesId) => ({
-//     seriesId,
-//   }))
-// }
-
+import { getSeriesById, getUnitsBySeriesId } from "@/lib/db"
+ 
 export async function generateMetadata({ params }: { params: Promise<{ seriesId: string }> }) {
   const { seriesId } = await params
-  // const series = modelHouseSeries[seriesId]
-  // if (!series) return { title: "Not Found" }
+  const series = await getSeriesById(seriesId)
+  if (!series) return { title: "Not Found" }
   return {
-    title: `Series | Aman Group of Companies`,
-    // description: series.description,
+    title: `${series.name} | Aman Group of Companies`,
+    description: series.description,
   }
 }
 
 export default async function SeriesPage({ params }: { params: Promise<{ seriesId: string }> }) {
   const { seriesId } = await params
-  const series = modelHouseSeries[seriesId]
+  const series = await getSeriesById(seriesId)
+  const units = await getUnitsBySeriesId(seriesId)
 
   if (!series) {
     console.log('Series not found for ID:', seriesId)
@@ -48,7 +43,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
         <div className="grid gap-8 lg:grid-cols-2 mb-12">
           <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
             <Image
-              src={series.imageUrl || "/placeholder.svg"}
+              src={series.image_url || "/placeholder.svg"}
               alt={series.name}
               width={800}
               height={600}
@@ -59,8 +54,8 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Badge variant="outline">{series.floorArea}</Badge>
-                {series.loftReady && <Badge>Loft Ready</Badge>}
+                <Badge variant="outline">{series.floor_area}</Badge>
+                {series.loft_ready && <Badge>Loft Ready</Badge>}
               </div>
               <h1 className="text-3xl font-bold tracking-tight mb-2">{series.name}</h1>
               <div className="flex items-center gap-2 text-muted-foreground">
@@ -69,15 +64,15 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
               </div>
             </div>
 
-            <p className="text-muted-foreground">{series.longDescription}</p>
+            <p className="text-muted-foreground">{series.long_description}</p>
 
             <div>
               <h3 className="font-semibold mb-3">Key Features</h3>
               <div className="grid grid-cols-2 gap-2">
-                {series.features.map((feature, index) => (
+                {(series.features || []).map((feature: any, index: number) => (
                   <div key={index} className="flex items-center gap-2 text-sm">
                     <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                    <span>{feature}</span>
+                    <span>{typeof feature === 'string' ? feature : feature}</span>
                   </div>
                 ))}
               </div>
@@ -88,8 +83,8 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                 <p className="text-sm text-muted-foreground">Starting Price*</p>
                 <p className="text-2xl font-bold text-primary">
                   ₱
-                  {series.units.length > 0
-                    ? Math.min(...series.units.map(u => u.price)).toLocaleString('en-PH', {
+                  {units.length > 0
+                    ? Math.min(...units.map(u => u.price)).toLocaleString('en-PH', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })
@@ -111,11 +106,11 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
 
           <TabsContent value="units" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {series.units && series.units.length > 0 ? series.units.map((unit) => (
+              {units && units.length > 0 ? units.map((unit) => (
                 <Card key={unit.id} className="overflow-hidden border-border/50 hover:border-primary/50 transition-all">
                   <div className="aspect-[16/10] overflow-hidden relative">
                     <Image
-                      src={unit.imageUrl || "/placeholder.svg"}
+                      src={unit.image_url || "/placeholder.svg"}
                       alt={unit.name}
                       width={400}
                       height={250}
@@ -123,7 +118,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                     />
                     <div className="absolute top-3 left-3">
                     </div>
-                    {unit.isRFO && (
+                    {unit.is_rfo && (
                       <div className="absolute top-3 right-3">
                         <Badge variant="outline" className="bg-background/90">
                           Ready for Occupancy
@@ -133,7 +128,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                   </div>
                   <CardContent className="p-4">
                     <h3 className="font-semibold text-lg mb-1">
-                      {unit.seriesName} - {unit.name}
+                      {series.name} - {unit.name}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{unit.description}</p>
 
@@ -160,7 +155,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                         </Button>
                         <Button asChild className="flex-1">
                           <Link
-                            href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(unit.seriesName + " - " + unit.name)}`}
+                            href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(series.name + " - " + unit.name)}`}
                           >
                             Calculate Loan
                           </Link>
@@ -183,10 +178,10 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
               </CardHeader>
               <CardContent>
                 <div className="grid gap-4 md:grid-cols-2">
-                  {series.specifications ? Object.entries(series.specifications).map(([key, value]) => (
+                  {series.specifications ? Object.entries(series.specifications).map(([key, value]: [string, any]) => (
                     <div key={key} className="space-y-1">
                       <h4 className="font-medium capitalize text-sm">{key.replace(/([A-Z])/g, " $1").trim()}</h4>
-                      <p className="text-sm text-muted-foreground">{value}</p>
+                      <p className="text-sm text-muted-foreground">{String(value)}</p>
                     </div>
                   )) : <p>No specifications available</p>}
                 </div>

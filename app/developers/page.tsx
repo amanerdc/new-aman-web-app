@@ -2,7 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Home } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { enjoyRealtyProjects, amanProjects } from "@/lib/developers-data"
+import { getDevelopers, getDeveloperProjects } from "@/lib/db"
 
 export const metadata = {
   title: "Our Developers | Aman Group of Companies",
@@ -10,7 +10,16 @@ export const metadata = {
     "Learn about our trusted developers - Enjoy Realty & Development Corporation and Aman Engineering Enterprise",
 }
 
-export default function DevelopersPage() {
+export default async function DevelopersPage() {
+  const developers = await getDevelopers()
+  const allProjects = await getDeveloperProjects()
+  
+  // Separate projects by developer
+  const enjoyRealtyDeveloper = developers.find((d: any) => d.name?.includes('Enjoy Realty'))
+  const amanDeveloper = developers.find((d: any) => d.name?.includes('Aman'))
+  
+  const enjoyRealtyProjects = allProjects.filter((p: any) => p.developerId === enjoyRealtyDeveloper?.id)
+  const amanProjects = allProjects.filter((p: any) => p.developerId === amanDeveloper?.id)
   return (
     <div className="p-12">
       {/* Enjoy Realty Section */}
@@ -30,7 +39,7 @@ export default function DevelopersPage() {
           <div className="absolute inset-0 flex items-center">
             <div className="absolute inset-0 flex items-center justify-center z-0">
               <Image
-                src="https://8ybl2ah7tkcii6tt.public.blob.vercel-storage.com/logo_images/Enjoy_Realty_Logo%20%281%29-RQ8HUzf03lgsW1fFNZuytby4ifEMUE.png"
+                src={enjoyRealtyDeveloper?.imageUrl || "https://8ybl2ah7tkcii6tt.public.blob.vercel-storage.com/logo_images/Enjoy_Realty_Logo%20%281%29-RQ8HUzf03lgsW1fFNZuytby4ifEMUE.png"}
                 alt="Enjoy Realty Logo"
                 width={600}
                 height={400}
@@ -40,10 +49,10 @@ export default function DevelopersPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-[#65932D]/80 to-transparent z-10"></div>
             <div className="px-4 sm:px-6 lg:px-12 max-w-3xl z-20 relative">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 lg:mb-4 leading-tight">
-                Enjoy Realty & Development Corporation
+                {enjoyRealtyDeveloper?.name || "Enjoy Realty & Development Corporation"}
               </h1>
               <p className="text-white/90 text-base sm:text-lg lg:text-xl mb-4 lg:mb-6 leading-relaxed">
-                Palm Villages, Parkview Communities, Haciendas de Naga, Employees' Village
+                {enjoyRealtyDeveloper?.description || "Palm Villages, Parkview Communities, Haciendas de Naga, Employees' Village"}
               </p>
             </div>
           </div>
@@ -122,7 +131,7 @@ export default function DevelopersPage() {
         <div className="relative h-[300px] md:h-[400px] rounded-lg overflow-hidden mb-12">
           <div className="relative h-full w-full">
             <Image
-              src="https://8ybl2ah7tkcii6tt.public.blob.vercel-storage.com/logo_images/aman_engineering_logo-uZFrkvP8LjG5wN6CEoGfixc9Zgsu91.png"
+              src={amanDeveloper?.imageUrl || "https://8ybl2ah7tkcii6tt.public.blob.vercel-storage.com/logo_images/aman_engineering_logo-uZFrkvP8LjG5wN6CEoGfixc9Zgsu91.png"}
               alt="Aman Engineering Enterprise"
               fill
               className="object-contain p-12 opacity-20"
@@ -131,9 +140,9 @@ export default function DevelopersPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#04009D]/80 to-transparent flex items-center">
             <div className="px-4 md:px-12 max-w-2xl">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
-                Aman Engineering Enterprise
+                {amanDeveloper?.name || "Aman Engineering Enterprise"}
               </h1>
-              <p className="text-white/90 text-base md:text-lg mb-4 md:mb-6">Parkview Naga Urban Residences</p>
+              <p className="text-white/90 text-base md:text-lg mb-4 md:mb-6">{amanDeveloper?.description || "Parkview Naga Urban Residences"}</p>
             </div>
           </div>
         </div>
