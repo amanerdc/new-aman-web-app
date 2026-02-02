@@ -152,6 +152,9 @@ export function AddLotOnlyForm({ onSuccess, editingLotOnly, onCancelEdit }: AddL
             <option value="">Select Property Option</option>
             <option value="nur_lot_only">NUR Lot Only</option>
             <option value="palm_lot_only">Palm Lot Only</option>
+            <option value="pvv_p2_lot_only">Parkview Village Phase 2 Lot Only</option>
+            <option value="pvv_p3_lot_only">Parkview Village Phase 3 Lot Only</option>
+            <option value="pv_ev_lot_only">Parkview Employees' Village Lot Only</option>
           </select>
           {errors.property_option && <p className="text-red-500 text-sm">{errors.property_option.message}</p>}
         </div>

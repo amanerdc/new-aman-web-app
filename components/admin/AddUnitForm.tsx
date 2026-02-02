@@ -29,8 +29,10 @@ const unitSchema = z.object({
   reservation_fee: z.number().min(0, 'Reservation fee must be positive').nullable().optional(),
   financing_options: z.string().nullable().optional(),
   down_payment_percentage: z.number().min(0, 'Percentage must be at least 0').max(100, 'Percentage cannot exceed 100').nullable().optional(),
-  completion_date: z.string().nullable().optional(),
-  construction_progress: z.number().min(0, 'Progress must be at least 0').max(100, 'Progress cannot exceed 100').nullable().optional(),
+  completion_date: z.preprocess((val) => val === '' ? undefined : val,z.string().optional()),
+  construction_progress: z.preprocess((val) => (Number.isNaN(val) ? undefined : val),z.number().min(0, 'Progress must be at least 0').max(100, 'Progress cannot exceed 100').optional()
+),
+
 })
 
 type UnitFormData = z.infer<typeof unitSchema>

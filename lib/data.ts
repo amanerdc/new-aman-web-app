@@ -1408,6 +1408,12 @@ export const reservationFees: Record<PropertyOption, number> = {
   nur_house_lot: 25000,
   palm_lot_only: 25000,
   palm_house_lot: 50000,
+  pvv_p2_lot_only: 10000,
+  pvv_p2_house_lot: 25000,
+  pvv_p3_lot_only: 10000,
+  pvv_p3_house_lot: 25000,
+  pv_ev_lot_only: 10000,
+  pv_ev_house_lot: 25000,
 }
 
 export const pagibigMaxLoan: Record<PropertyOption, number | null> = {
@@ -1415,6 +1421,12 @@ export const pagibigMaxLoan: Record<PropertyOption, number | null> = {
   nur_house_lot: 2500000,
   palm_lot_only: 1600000,
   palm_house_lot: 4000000,
+  pvv_p2_lot_only: 1000000,
+  pvv_p2_house_lot: 2500000,
+  pvv_p3_lot_only: 4000000,
+  pvv_p3_house_lot: 4000000,
+  pv_ev_lot_only: 1000000,
+  pv_ev_house_lot: 2500000,
 }
 
 export const downPaymentOptions = [20, 25, 30, 35, 40, 50]
