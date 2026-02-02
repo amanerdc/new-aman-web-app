@@ -1401,9 +1401,12 @@ export const propertyOptions: { value: PropertyOption; label: string }[] = [
   { value: 'nur_house_lot', label: 'NUR House & Lot' },
   { value: 'palm_lot_only', label: 'Palm Lot Only' },
   { value: 'palm_house_lot', label: 'Palm House & Lot' },
-  { value: 'pvv_p2_lot_only', label: 'PVV P2 Lot Only' },
-  { value: 'pvv_p2_house_lot', label: 'PVV P2 House & Lot' },
-  { value: 'pvv_p3_lot_only', label: 'PVV P3 Lot Only' },
+  { value: 'pv_ev_lot_only', label: 'Parkview Employees\' Village Lot Only' },
+  { value: 'pv_ev_house_lot', label: 'Parkview Employees\' Village House & Lot' },
+  { value: 'pvv_p2_lot_only', label: 'Parkview Village Phase II Lot Only' },
+  { value: 'pvv_p2_house_lot', label: 'Parkview Village Phase II House & Lot' },
+  { value: 'pvv_p3_lot_only', label: 'Parkview Village Phase III Lot Only' },
+  { value: 'pvv_p3_house_lot', label: 'Parkview Village Phase III House & Lot' },
 ]
 
 export const reservationFees: Record<PropertyOption, number> = {
