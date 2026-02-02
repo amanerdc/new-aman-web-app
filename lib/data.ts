@@ -1394,13 +1394,16 @@ export const modelHouseSeries: Record<string, ModelHouseSeries> = {
 }
 
 // Loan Calculator Types and Data
-export type PropertyOption = 'nur_lot_only' | 'nur_house_lot' | 'palm_lot_only' | 'palm_house_lot'
+export type PropertyOption = 'nur_lot_only' | 'nur_house_lot' | 'palm_lot_only' | 'palm_house_lot' | 'pvv_p2_lot_only' | 'pvv_p2_house_lot' | 'pvv_p3_lot_only' | 'pvv_p3_house_lot' | 'pv_ev_lot_only' | 'pv_ev_house_lot'
 
 export const propertyOptions: { value: PropertyOption; label: string }[] = [
   { value: 'nur_lot_only', label: 'NUR Lot Only' },
   { value: 'nur_house_lot', label: 'NUR House & Lot' },
   { value: 'palm_lot_only', label: 'Palm Lot Only' },
   { value: 'palm_house_lot', label: 'Palm House & Lot' },
+  { value: 'pvv_p2_lot_only', label: 'PVV P2 Lot Only' },
+  { value: 'pvv_p2_house_lot', label: 'PVV P2 House & Lot' },
+  { value: 'pvv_p3_lot_only', label: 'PVV P3 Lot Only' },
 ]
 
 export const reservationFees: Record<PropertyOption, number> = {
