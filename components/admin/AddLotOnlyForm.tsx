@@ -15,7 +15,7 @@ const lotOnlySchema = z.object({
   lot_area: z.string().min(1, 'Lot Area is required'),
   description: z.string().optional(),
   price: z.number().min(0, 'Price must be a positive number').nullable().optional(),
-  property_option: z.enum(['nur_lot_only', 'palm_lot_only'], { message: 'Please select a valid property option' }).optional(),
+  property_option: z.enum(['nur_lot_only', 'palm_lot_only', 'pvv_p2_lot_only',  'pvv_p3_lot_only', 'pv_ev_lot_only'], { message: 'Please select a valid property option' }).optional(),
   location: z.string().min(1, 'Location is required').nullable().optional(),
   project: z.string().min(1, 'Project name is required').nullable().optional(),
   developer: z.enum(['Aman Engineering', 'Enjoy Realty & Development Corporation'], { message: 'Please select a valid developer' }).nullable().optional(),
