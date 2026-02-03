@@ -4,6 +4,8 @@ import { Home } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getDevelopers, getDeveloperProjects } from "@/lib/db"
 
+export const revalidate = 0
+
 export const metadata = {
   title: "Our Developers | Aman Group of Companies",
   description:
@@ -212,3 +214,4 @@ export default async function DevelopersPage() {
     </div>
   )
 }
+

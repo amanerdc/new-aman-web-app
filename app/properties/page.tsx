@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getSeries, getUnits } from "@/lib/db"
 
+export const revalidate = 0
+
 
 export const metadata = {
   title: "Model Houses | Aman Group of Companies",
@@ -114,3 +116,4 @@ export default async function PropertiesPage() {
     </div>
   )
 }
+

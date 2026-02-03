@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getUnits, getSeries } from "@/lib/db"
 
+export const revalidate = 0
+
 export const metadata = {
   title: "Ready for Occupancy Units | Aman Group of Companies",
   description:
@@ -211,3 +213,4 @@ export default async function RFOPage() {
     </div>
   )
 }
+

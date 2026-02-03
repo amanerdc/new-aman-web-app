@@ -11,6 +11,8 @@ import { getLotOnlyById } from "@/lib/db"
 import { BookViewingForm } from "@/components/book-viewing-form"
 import { AgentTools } from "@/components/agent-tools"
 
+export const revalidate = 0
+
 export async function generateMetadata({
   params,
 }: {

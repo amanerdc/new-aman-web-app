@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getSeriesById, getUnitsBySeriesId } from "@/lib/db"
+
+export const revalidate = 0
  
 export async function generateMetadata({ params }: { params: Promise<{ seriesId: string }> }) {
   const { seriesId } = await params

@@ -6,6 +6,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge"
 import { getLotOnlyProperties } from "@/lib/db"
 
+export const revalidate = 0
+
 export const metadata = {
   title: "Lot Only Properties | Aman Group of Companies",
   description: "Browse available lot only properties from Aman Group of Companies",
@@ -97,3 +99,4 @@ export default async function LotOnlyPage() {
     </div>
   )
 }
+

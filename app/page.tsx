@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { getSeries, getUnits } from "@/lib/db"
 
+export const revalidate = 0
+
 export default async function HomePage() {
   const allSeries = await getSeries()
   const allUnits = await getUnits()
@@ -183,3 +185,4 @@ export default async function HomePage() {
     </div>
   )
 }
+

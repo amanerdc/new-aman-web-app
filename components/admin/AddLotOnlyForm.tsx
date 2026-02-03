@@ -85,14 +85,41 @@ export function AddLotOnlyForm({ onSuccess, editingLotOnly, onCancelEdit }: AddL
     const url = editingLotOnly ? `/api/lot-only/${editingLotOnly.id}` : '/api/lot-only'
     const method = editingLotOnly ? 'PUT' : 'POST'
 
+    const normalize = <T,>(v: T | '' | undefined) =>
+      v === '' || v === undefined ? null : v
+    const normalizeNumber = (v: number | null | undefined) =>
+      v === undefined || v === null || Number.isNaN(v) ? null : v
+
     const payload = {
       ...data,
-      features: data.features ? data.features.split(',').map(f => f.trim()) : [],
-      utilities: data.utilities ? data.utilities.split(',').map(f => f.trim()) : [],
-      nearby_amenities: data.nearby_amenities ? data.nearby_amenities.split(',').map(f => f.trim()) : [],
+      property_option: normalize(data.property_option),
+      developer: normalize(data.developer),
+      location: normalize(data.location),
+      project: normalize(data.project),
+      status: normalize(data.status),
+      property_type: normalize(data.property_type),
+      financing_options: normalize(data.financing_options),
+      down_payment_terms: normalize(data.down_payment_terms),
+      zoning: normalize(data.zoning),
+      image_url: normalize(data.image_url),
+      price: normalizeNumber(data.price),
+      reservation_fee: normalizeNumber(data.reservation_fee),
+      down_payment_percentage: normalizeNumber(data.down_payment_percentage),
+
+      features: data.features
+        ? data.features.split(',').map(f => f.trim())
+        : [],
+
+      utilities: data.utilities
+        ? data.utilities.split(',').map(f => f.trim())
+        : [],
+
+      nearby_amenities: data.nearby_amenities
+        ? data.nearby_amenities.split(',').map(f => f.trim())
+        : [],
     }
 
-    console.log('Form submit - URL:', url, 'Method:', method, 'Payload:', payload)
+    console.log('Submitting payload:', payload)
 
     try {
       const response = await fetch(url, {
@@ -101,23 +128,47 @@ export function AddLotOnlyForm({ onSuccess, editingLotOnly, onCancelEdit }: AddL
         body: JSON.stringify(payload),
       })
 
-      console.log('Response status:', response.status, 'OK:', response.ok)
+      const responseText = await response.text()
+      const result = responseText
+        ? (() => {
+            try {
+              return JSON.parse(responseText)
+            } catch {
+              return null
+            }
+          })()
+        : null
 
-      if (response.ok) {
-        setMessage({ type: 'success', text: editingLotOnly ? 'Lot-Only updated successfully' : 'Lot-Only added successfully' })
-        reset()
-        onSuccess?.()
-      } else {
-        const error = await response.json().catch(() => ({ error: 'Unknown error' }))
-        console.error('API error:', error)
-        setMessage({ type: 'error', text: error.error || (editingLotOnly ? 'Error updating lot-only' : 'Error adding lot-only') })
+      if (!response.ok) {
+        console.error('API error:', result)
+        setMessage({
+          type: 'error',
+          text:
+            result?.error ||
+            result?.message ||
+            responseText ||
+            'Failed to save lot-only',
+        })
+        return
       }
+
+      setMessage({
+        type: 'success',
+        text: editingLotOnly
+          ? 'Lot-Only updated successfully'
+          : 'Lot-Only added successfully',
+      })
+
+      reset()
+      onSuccess?.()
     } catch (err) {
-      console.error('Fetch error:', err)
+      console.error('Network error:', err)
       setMessage({ type: 'error', text: 'Network error. Please try again.' })
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
