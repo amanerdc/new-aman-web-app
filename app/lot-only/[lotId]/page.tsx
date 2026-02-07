@@ -1,7 +1,7 @@
 import type React from "react"
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
+import { SmartMedia } from "@/components/media/SmartMedia"
 import { ArrowLeft, MapPin, CheckCircle2, Calculator, Droplets, Zap, Wifi, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -65,12 +65,13 @@ export default async function LotDetailPage({
         <div className="grid gap-8 lg:grid-cols-2 mb-12">
           <div className="space-y-4">
             <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
-              <Image
-                src={lot.imageUrl || "/placeholder.svg"}
+              <SmartMedia
+                src={lot.imageUrl}
                 alt={lot.name}
                 width={800}
                 height={600}
                 className="h-full w-full object-cover"
+                embedClassName="h-full w-full border-0"
                 priority
               />
             </div>

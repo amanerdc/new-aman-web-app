@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
+import { SmartMedia } from "@/components/media/SmartMedia"
 import { Home } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getDevelopers, getDeveloperProjects } from "@/lib/db"
@@ -86,12 +87,13 @@ export default async function DevelopersPage() {
                   <div className="lg:flex">
                     <div className="lg:w-1/2 relative">
                       <div className="h-[250px] sm:h-[300px] lg:h-[350px] overflow-hidden">
-                        <Image
-                          src={project.imageUrl || "/placeholder.svg"}
+                        <SmartMedia
+                          src={project.imageUrl}
                           alt={project.name}
                           width={800}
                           height={600}
                           className="w-full h-full object-contain bg-white hover:scale-102 transition-transform duration-300"
+                          embedClassName="w-full h-full border-0"
                           sizes="(max-width: 768px) 100vw, 50vw"
                           priority={index === 0}
                         />
@@ -171,12 +173,13 @@ export default async function DevelopersPage() {
                 <div className="bg-white rounded-lg shadow-md overflow-hidden border">
                   <div className="md:flex">
                     <div className="md:w-1/2 relative h-[300px] overflow-hidden">
-                      <Image
-                        src={project.imageUrl || "/placeholder.svg"}
+                      <SmartMedia
+                        src={project.imageUrl}
                         alt={project.name}
                         width={800}
                         height={600}
                         className="w-full h-full object-contain md:object-cover hover:scale-105 transition-transform duration-300 bg-white"
+                        embedClassName="w-full h-full border-0"
                         sizes="(max-width: 768px) 100vw, 50vw"
                         priority={index === 0}
                       />

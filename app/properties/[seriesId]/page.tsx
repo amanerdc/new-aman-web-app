@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
+import { SmartMedia } from "@/components/media/SmartMedia"
 import { ArrowLeft, MapPin, Ruler, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -44,12 +44,13 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
         {/* Hero Section */}
         <div className="grid gap-8 lg:grid-cols-2 mb-12">
           <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
-            <Image
-              src={series.image_url || "/placeholder.svg"}
+            <SmartMedia
+              src={series.image_url}
               alt={series.name}
               width={800}
               height={600}
               className="h-full w-full object-cover"
+              embedClassName="h-full w-full border-0"
               priority
             />
           </div>
@@ -111,12 +112,13 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
               {units && units.length > 0 ? units.map((unit) => (
                 <Card key={unit.id} className="overflow-hidden border-border/50 hover:border-primary/50 transition-all">
                   <div className="aspect-[16/10] overflow-hidden relative">
-                    <Image
-                      src={unit.image_url || "/placeholder.svg"}
+                    <SmartMedia
+                      src={unit.image_url}
                       alt={unit.name}
                       width={400}
                       height={250}
                       className="h-full w-full object-cover"
+                      embedClassName="h-full w-full border-0"
                     />
                     <div className="absolute top-3 left-3">
                     </div>

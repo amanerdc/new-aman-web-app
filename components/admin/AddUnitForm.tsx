@@ -203,8 +203,17 @@ export function AddUnitForm({ onSuccess, editingUnit, onCancelEdit }: AddUnitFor
           <Input id="floor_plan_image" {...register('floor_plan_image')} />
         </div>
         <div className="col-span-2">
-          <Label htmlFor="image_url" className="mb-1">Image URL</Label>
-          <Input id="image_url" {...register('image_url')} />
+          <Label htmlFor="image_url" className="mb-1">Media URL or Embed</Label>
+          <Input
+            id="image_url"
+            placeholder="https://... or embed:https://..."
+            {...register('image_url')}
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Paste an image URL, Google Drive file link (share the file, not just the folder), or an embed link. For custom embeds, use
+            <span className="font-medium"> embed:</span>
+            followed by the iframe src.
+          </p>
         </div>
         <div className="col-span-2">
           <Label htmlFor="floor_plan_pdf_id" className="mb-1">Floor Plan PDF ID</Label>

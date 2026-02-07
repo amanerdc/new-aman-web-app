@@ -1,5 +1,5 @@
 import Link from "next/link"
-import Image from "next/image"
+import { SmartMedia } from "@/components/media/SmartMedia"
 import { Home, MapPin, Calculator, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -37,12 +37,13 @@ export default async function LotOnlyPage() {
           {lotOnlyProperties.map((lot) => (
             <Card key={lot.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="aspect-[4/3] overflow-hidden">
-                <Image
-                  src={lot.imageUrl || "/placeholder.svg"}
+                <SmartMedia
+                  src={lot.imageUrl}
                   alt={lot.name}
                   width={600}
                   height={400}
                   className="h-full w-full object-cover transition-transform hover:scale-105"
+                  embedClassName="h-full w-full border-0"
                 />
               </div>
               <CardHeader className="pb-2">

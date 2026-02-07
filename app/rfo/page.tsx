@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
+import { SmartMedia } from "@/components/media/SmartMedia"
 import { ArrowLeft, MapPin, CheckCircle2, Home } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -108,12 +109,13 @@ export default async function RFOPage() {
                     className="overflow-hidden border-border/50 hover:border-primary/50 transition-all"
                   >
                     <div className="aspect-[16/10] overflow-hidden relative">
-                      <Image
-                        src={unit.imageUrl || "/placeholder.svg"}
+                      <SmartMedia
+                        src={unit.imageUrl}
                         alt={unit.name}
                         width={400}
                         height={250}
                         className="h-full w-full object-cover"
+                        embedClassName="h-full w-full border-0"
                       />
                       <div className="absolute top-3 left-3">
                         <Badge className="bg-primary">Ready for Occupancy</Badge>

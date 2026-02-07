@@ -1,5 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
+import { SmartMedia } from "@/components/media/SmartMedia"
 import { ArrowRight, Building2, Calculator, Home, CheckCircle2, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -130,12 +131,13 @@ export default async function HomePage() {
                   <Link key={series.id} href={`/properties/${series.id}`} className="group">
                     <Card className="overflow-hidden border-border/50 transition-all hover:border-primary/50 hover:shadow-lg">
                       <div className="aspect-[4/3] overflow-hidden">
-                        <Image
-                          src={series.imageUrl || "/placeholder.svg"}
+                        <SmartMedia
+                          src={series.imageUrl}
                           alt={series.name}
                           width={400}
                           height={300}
                           className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                          embedClassName="h-full w-full border-0"
                         />
                       </div>
                       <CardContent className="p-4">

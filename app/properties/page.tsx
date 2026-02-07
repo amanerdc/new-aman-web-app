@@ -1,5 +1,5 @@
 import Link from "next/link"
-import Image from "next/image"
+import { SmartMedia } from "@/components/media/SmartMedia"
 import { Home, Building2 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -54,12 +54,13 @@ export default async function PropertiesPage() {
               <Link key={series.id} href={`/properties/${series.id}`} className="group">
                 <Card className="overflow-hidden h-full border-border/50 transition-all hover:border-primary/50 hover:shadow-xl">
                   <div className="aspect-[16/10] overflow-hidden relative">
-                    <Image
-                      src={series.imageUrl || "/placeholder.svg"}
+                    <SmartMedia
+                      src={series.imageUrl}
                       alt={series.name}
                       width={600}
                       height={375}
                       className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                      embedClassName="h-full w-full border-0"
                     />
                     <div className="absolute top-3 left-3 flex gap-2">
                       <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">

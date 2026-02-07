@@ -73,6 +73,20 @@ export function LoanCalculator() {
     const optionParam = searchParams.get("option") as PropertyOption | null
     const agentParam = searchParams.get("agent")
     const unitImageParam = searchParams.get("unitImage")
+    const looksLikeEmbed = (value: string) => {
+      const trimmed = value.trim().toLowerCase()
+      if (trimmed.startsWith("embed:") || trimmed.startsWith("iframe:")) return true
+      if (trimmed.includes("<iframe")) return true
+      if (
+        trimmed.includes("youtube.com") ||
+        trimmed.includes("youtu.be") ||
+        trimmed.includes("vimeo.com") ||
+        trimmed.includes("google.com/maps")
+      ) {
+        return true
+      }
+      return false
+    }
 
     if (priceParam) {
       setPrice(priceParam)
@@ -81,11 +95,16 @@ export function LoanCalculator() {
       setUnitName(unitParam)
       // Use provided image or find unit image
       if (unitImageParam) {
-        setUnitImage(decodeURIComponent(unitImageParam))
+        const decoded = decodeURIComponent(unitImageParam)
+        if (!looksLikeEmbed(decoded)) {
+          setUnitImage(decoded)
+        }
       } else {
         const unitData = findUnitByDisplayName(unitParam)
         if (unitData) {
-          setUnitImage(unitData.unit.imageUrl)
+          if (!looksLikeEmbed(unitData.unit.imageUrl)) {
+            setUnitImage(unitData.unit.imageUrl)
+          }
         }
       }
     }
