@@ -20,7 +20,7 @@ const seriesSchema = z.object({
   description: z.string().nullable().optional(),
   long_description: z.string().nullable().optional(),
   features: z.string().nullable().optional(),
-  specification: z.string().nullable().optional(),
+  specifications: z.string().nullable().optional(),
   floor_plan_image: z.string().nullable().optional(),
   image_url: z.string().nullable().optional(),
 })
@@ -39,7 +39,7 @@ export function AddSeriesForm({ onSuccess, editingSeries, onCancelEdit }: AddSer
     defaultValues: editingSeries ? {
       ...editingSeries,
       features: typeof editingSeries.features === 'string' ? editingSeries.features : (editingSeries.features as any).join(', '),
-      specification: editingSeries.specification ? (typeof editingSeries.specification === 'string' ? editingSeries.specification : JSON.stringify(editingSeries.specification, null, 2)) : null
+      specifications: editingSeries.specifications ? (typeof editingSeries.specifications === 'string' ? editingSeries.specifications : JSON.stringify(editingSeries.specifications, null, 2)) : null
     } : {},
   })
   const [loading, setLoading] = useState(false)
@@ -57,7 +57,7 @@ export function AddSeriesForm({ onSuccess, editingSeries, onCancelEdit }: AddSer
       setValue('features', editingSeries.features ? (typeof editingSeries.features === 'string' ? editingSeries.features : (editingSeries.features as any).join(', ')) : '')
       setValue('project', editingSeries.project)
       setValue('base_price', editingSeries.base_price)
-      setValue('specification', editingSeries.specification ? (typeof editingSeries.specification === 'string' ? editingSeries.specification : JSON.stringify(editingSeries.specification, null, 2)) : null)
+      setValue('specifications', editingSeries.specifications ? (typeof editingSeries.specifications === 'string' ? editingSeries.specifications : JSON.stringify(editingSeries.specifications, null, 2)) : null)
       setValue('floor_plan_image', editingSeries.floor_plan_image)
       setValue('image_url', editingSeries.image_url)
     } else {
@@ -72,12 +72,12 @@ export function AddSeriesForm({ onSuccess, editingSeries, onCancelEdit }: AddSer
     const url = editingSeries ? `/api/series/${editingSeries.id}` : '/api/series'
     const method = editingSeries ? 'PUT' : 'POST'
 
-    let specification: any = null
-    if (data.specification) {
+    let specifications: any = null
+    if (data.specifications) {
       try {
-        specification = JSON.parse(data.specification)
+        specifications = JSON.parse(data.specifications)
       } catch (e) {
-        setMessage({ type: 'error', text: 'Invalid JSON in specification field' })
+        setMessage({ type: 'error', text: 'Invalid JSON in specifications field' })
         setLoading(false)
         return
       }
@@ -86,7 +86,7 @@ export function AddSeriesForm({ onSuccess, editingSeries, onCancelEdit }: AddSer
     const payload = {
       ...data,
       features: data.features ? data.features.split(',').map(f => f.trim()) : [],
-      specification,
+      specifications,
     }
 
     console.log('Form submit - URL:', url, 'Method:', method, 'Payload:', payload)
@@ -170,8 +170,8 @@ export function AddSeriesForm({ onSuccess, editingSeries, onCancelEdit }: AddSer
           <Input id="features" {...register('features')} />
         </div>
         <div className="col-span-2">
-          <Label htmlFor="specification" className="mb-1">Construction Specification (JSON)</Label>
-          <Textarea id="specification" {...register('specification')} className="text-sm" />
+          <Label htmlFor="specifications" className="mb-1">Construction Specifications (JSON)</Label>
+          <Textarea id="specifications" {...register('specifications')} className="text-sm" />
         </div>
         <div className="col-span-2">
           <Label htmlFor="floor_plan_image" className="mb-1">Floor Plan Image</Label>

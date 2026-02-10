@@ -65,6 +65,8 @@ export function LoanCalculator() {
   const [clientName, setClientName] = useState<string>("")
   const [agentName, setAgentName] = useState<string>("")
   const [unitImage, setUnitImage] = useState<string | null>(null)
+  const [showPrivacyShield, setShowPrivacyShield] = useState<boolean>(false)
+  const [watermarkText, setWatermarkText] = useState<string>("Aman Group • Loan Estimate • Confidential")
 
   // Pre-fill from URL params
   useEffect(() => {
@@ -121,6 +123,61 @@ export function LoanCalculator() {
       loadAgent()
     }
   }, [searchParams])
+
+  useEffect(() => {
+    const label = clientName ? `Aman Group • ${clientName} • Confidential` : "Aman Group • Loan Estimate • Confidential"
+    setWatermarkText(label)
+  }, [clientName])
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      setShowPrivacyShield(document.hidden)
+    }
+
+    const handleBlur = () => {
+      setShowPrivacyShield(true)
+    }
+
+    const handleFocus = () => {
+      setShowPrivacyShield(false)
+    }
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      const key = event.key
+      const isPrintScreen = key === "PrintScreen"
+      const isPrintOrSave = (event.ctrlKey || event.metaKey) && (key.toLowerCase() === "p" || key.toLowerCase() === "s")
+
+      if (isPrintScreen || isPrintOrSave) {
+        event.preventDefault()
+        setShowPrivacyShield(true)
+        window.setTimeout(() => setShowPrivacyShield(false), 1500)
+      }
+    }
+
+    const handleBeforePrint = () => {
+      setShowPrivacyShield(true)
+    }
+
+    const handleAfterPrint = () => {
+      setShowPrivacyShield(false)
+    }
+
+    document.addEventListener("visibilitychange", handleVisibility)
+    window.addEventListener("blur", handleBlur)
+    window.addEventListener("focus", handleFocus)
+    window.addEventListener("keydown", handleKeydown, true)
+    window.addEventListener("beforeprint", handleBeforePrint)
+    window.addEventListener("afterprint", handleAfterPrint)
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility)
+      window.removeEventListener("blur", handleBlur)
+      window.removeEventListener("focus", handleFocus)
+      window.removeEventListener("keydown", handleKeydown, true)
+      window.removeEventListener("beforeprint", handleBeforePrint)
+      window.removeEventListener("afterprint", handleAfterPrint)
+    }
+  }, [])
 
   const calculateLoan = () => {
     const priceValue = Number.parseFloat(price)
@@ -534,6 +591,9 @@ export function LoanCalculator() {
             <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-4">
               <li>
                 This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.
+              </li>
+              <li>
+                The availability of lots and properties may change without prior notice.
               </li>
               <li>
                 Additional charges such as reservation fees, processing fees, and documentary stamp taxes are not included in these calculations.
@@ -1033,7 +1093,37 @@ export function LoanCalculator() {
 
       {/* Results */}
       {results && (
-        <div ref={resultsRef} id="loan-results" className="space-y-3">
+        <div
+          ref={resultsRef}
+          id="loan-results"
+          className="space-y-3 relative select-none"
+          onContextMenu={(event) => event.preventDefault()}
+        >
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none z-10 opacity-15"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(135deg, rgba(22,101,52,0.35) 0, rgba(22,101,52,0.35) 10px, rgba(22,101,52,0) 10px, rgba(22,101,52,0) 20px)",
+            }}
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center"
+          >
+            <div className="text-primary/30 text-xs md:text-sm font-semibold rotate-[-20deg] tracking-[0.3em] text-center px-6">
+              {watermarkText}
+            </div>
+          </div>
+
+          {showPrivacyShield && (
+            <div className="absolute inset-0 z-30 bg-white/90 backdrop-blur-sm flex items-center justify-center text-center px-6">
+              <div>
+                <p className="text-sm font-semibold text-primary">Screen capture disabled</p>
+                <p className="text-xs text-muted-foreground mt-1">This view is protected to discourage screenshots.</p>
+              </div>
+            </div>
+          )}
           {/* Unit Image */}
           {unitImage && (
             <Card>
@@ -1281,6 +1371,7 @@ export function LoanCalculator() {
                   <p className="font-medium text-amber-800 mb-1 text-sm">Important Notes</p>
                   <ul className="text-xs text-muted-foreground space-y-0.5 list-disc pl-3">
                     <li>This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.</li>
+                    <li>The availability of lots and properties may change without prior notice.</li>
                     <li>Additional charges such as reservation fees, processing fees, and documentary stamp taxes are not included in these calculations.</li>
                     <li>The standard reservation fee is ₱25,000.00 and is non-refundable but deductible from the total contract price.</li>
                     <li>Interest rates are subject to change without prior notice.</li>
