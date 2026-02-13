@@ -43,6 +43,11 @@ interface AddUnitFormProps {
   onCancelEdit?: () => void
 }
 
+type SeriesOption = {
+  id: string
+  name?: string
+}
+
 export function AddUnitForm({ onSuccess, editingUnit, onCancelEdit }: AddUnitFormProps) {
   const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<UnitFormData>({
     resolver: zodResolver(unitSchema),
@@ -53,6 +58,23 @@ export function AddUnitForm({ onSuccess, editingUnit, onCancelEdit }: AddUnitFor
   })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [seriesOptions, setSeriesOptions] = useState<SeriesOption[]>([])
+
+  useEffect(() => {
+    const loadSeries = async () => {
+      try {
+        const response = await fetch('/api/series')
+        if (!response.ok) return
+        const data = await response.json()
+        if (Array.isArray(data)) {
+          setSeriesOptions(data)
+        }
+      } catch (error) {
+        console.error('Error loading series:', error)
+      }
+    }
+    loadSeries()
+  }, [])
 
   useEffect(() => {
     if (editingUnit) {
@@ -136,7 +158,14 @@ export function AddUnitForm({ onSuccess, editingUnit, onCancelEdit }: AddUnitFor
         </div>
         <div>
           <Label htmlFor="series_id" className="mb-1">Series ID</Label>
-          <Input id="series_id" {...register('series_id')} />
+          <select id="series_id" {...register('series_id')} className="border rounded p-2 w-full bg-background">
+            <option value="">Select Series ID</option>
+            {seriesOptions.map((series) => (
+              <option key={series.id} value={series.id}>
+                {series.id}{series.name ? ` (${series.name})` : ''}
+              </option>
+            ))}
+          </select>
           {errors.series_id && <p className="text-red-500 text-sm">{errors.series_id.message}</p>}
         </div>
         <div className="col-span-2">
@@ -216,12 +245,12 @@ export function AddUnitForm({ onSuccess, editingUnit, onCancelEdit }: AddUnitFor
           </p>
         </div>
         <div className="col-span-2">
-          <Label htmlFor="floor_plan_pdf_id" className="mb-1">Floor Plan PDF ID</Label>
-          <Input id="floor_plan_pdf_id" {...register('floor_plan_pdf_id')} />
+          <Label htmlFor="floor_plan_pdf_id" className="mb-1">Floor Plan PDF Link or ID</Label>
+          <Input id="floor_plan_pdf_id" placeholder="https://drive.google.com/file/d/... or drive file ID" {...register('floor_plan_pdf_id')} />
         </div>
         <div className="col-span-2">
           <Label htmlFor="walkthrough" className="mb-1">Walkthrough URL</Label>
-          <Input id="walkthrough" {...register('walkthrough')} />
+          <Input id="walkthrough" placeholder="https://youtu.be/... or https://drive.google.com/file/d/..." {...register('walkthrough')} />
         </div>
         <div className="col-span-2">
           <Label htmlFor="is_rfo" className="mb-1">Is RFO</Label>

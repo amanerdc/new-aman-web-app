@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { getUnitById, getSeriesById } from "@/lib/db"
 import { BookViewingForm } from "@/components/book-viewing-form"
 import { AgentTools } from "@/components/agent-tools"
+import { toEmbeddableVideoUrl, toFloorPlanPdfUrl } from "@/lib/media-utils"
 
 export const revalidate = 0
 
@@ -44,6 +45,12 @@ export default async function UnitDetailPage({
   }
 
   const specifications = series.specifications
+  const floorPlanHref = toFloorPlanPdfUrl(unit.floor_plan_pdf_id)
+  const walkthroughEmbedUrl = toEmbeddableVideoUrl(unit.walkthrough)
+  const walkthroughValue = unit.walkthrough?.trim() ?? ""
+  const hasWalkthrough = Boolean(
+    walkthroughValue && walkthroughValue !== "https://www.youtube.com/embed/dQw4w9WgXcQ",
+  )
 
   return (
     <div className="py-8 px-4 sm:px-6 lg:px-8">
@@ -133,7 +140,7 @@ export default async function UnitDetailPage({
 
             <Button asChild size="lg" className="w-full gap-2">
               <Link
-                href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(series.name + ' - ' + unit.name)}&unitImage=${encodeURIComponent(unit.image_url || '')}${agentParam ? `&agent=${agentParam}` : ''}`}
+                href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(series.name + ' - ' + unit.name)}&unitImage=${encodeURIComponent(unit.image_url || '')}&isRfo=${unit.is_rfo ? '1' : '0'}${agentParam ? `&agent=${agentParam}` : ''}`}
               >
                 <Calculator className="h-5 w-5" />
                 Calculate Loan
@@ -225,7 +232,7 @@ export default async function UnitDetailPage({
 
         <div className="space-y-1 mb-8">
             {/* Floor Plan */}
-            {unit.floor_plan_pdf_id && (
+            {floorPlanHref && (
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base">Floor Plan</CardTitle>
@@ -233,7 +240,7 @@ export default async function UnitDetailPage({
                 <CardContent>
                   <Button asChild variant="outline" className="w-full gap-2 bg-transparent">
                     <a
-                      href={`https://drive.google.com/file/d/${unit.floor_plan_pdf_id}/view`}
+                      href={floorPlanHref}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -247,7 +254,7 @@ export default async function UnitDetailPage({
         </div>
 
         {/* Video Walkthrough */}
-        {unit.walkthrough && unit.walkthrough !== "https://www.youtube.com/embed/dQw4w9WgXcQ" && unit.walkthrough.trim() ? (
+        {hasWalkthrough ? (
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -256,16 +263,25 @@ export default async function UnitDetailPage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video rounded-lg overflow-hidden">
-                <iframe
-                  src={unit.walkthrough}
-                  title={`${unit.name} Walkthrough`}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  loading="lazy"
-                />
-              </div>
+              {walkthroughEmbedUrl ? (
+                <div className="aspect-video rounded-lg overflow-hidden">
+                  <iframe
+                    src={walkthroughEmbedUrl}
+                    title={`${unit.name} Walkthrough`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    loading="lazy"
+                  />
+                </div>
+              ) : (
+                <Button asChild variant="outline" className="w-full gap-2 bg-transparent">
+                  <a href={walkthroughValue} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4" />
+                    Open Walkthrough Video
+                  </a>
+                </Button>
+              )}
             </CardContent>
           </Card>
         ) : null}

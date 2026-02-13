@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator"
 import { Download, Calculator, Building, Banknote, Landmark, Home, AlertCircle, User } from "lucide-react"
 import html2canvas from "html2canvas"
-import Image from "next/image"
+import { SmartMedia } from "@/components/media/SmartMedia"
 import {
   propertyOptions,
   reservationFees,
@@ -25,11 +25,20 @@ import {
 } from "@/lib/data"
 import { getAgentById } from "@/lib/agents"
 import { findUnitByDisplayName } from "@/lib/utils"
+import { toImagePreviewUrl } from "@/lib/media-utils"
 
 type LoanResults = {
+  isRfo: boolean
   price: number
   downPaymentPercent: number
   downPaymentAmount: number
+  spotDownPaymentPercent: number
+  spotDownPaymentAmount: number
+  spotDiscountAmount: number
+  spotTotalPayable: number
+  dpAfterSpotAmount: number
+  dpAfterSpotMonthly6: number
+  dpAfterSpotRequiredIncome: number
   reservationFee: number
   option1Monthly: number
   option1RequiredIncome: number
@@ -64,9 +73,11 @@ export function LoanCalculator() {
   const [unitName, setUnitName] = useState<string>("")
   const [clientName, setClientName] = useState<string>("")
   const [agentName, setAgentName] = useState<string>("")
-  const [unitImage, setUnitImage] = useState<string | null>(null)
-  const [showPrivacyShield, setShowPrivacyShield] = useState<boolean>(false)
-  const [watermarkText, setWatermarkText] = useState<string>("Aman Group • Loan Estimate • Confidential")
+  const [unitMedia, setUnitMedia] = useState<string | null>(null)
+  const [unitImageForExport, setUnitImageForExport] = useState<string | null>(null)
+  const [isRfo, setIsRfo] = useState<boolean>(false)
+  const [spotDownPaymentPercent, setSpotDownPaymentPercent] = useState<number>(10)
+  const [flashWhite, setFlashWhite] = useState<boolean>(false)
 
   // Pre-fill from URL params
   useEffect(() => {
@@ -75,37 +86,28 @@ export function LoanCalculator() {
     const optionParam = searchParams.get("option") as PropertyOption | null
     const agentParam = searchParams.get("agent")
     const unitImageParam = searchParams.get("unitImage")
-    const looksLikeEmbed = (value: string) => {
-      const trimmed = value.trim().toLowerCase()
-      if (trimmed.startsWith("embed:") || trimmed.startsWith("iframe:")) return true
-      if (trimmed.includes("<iframe")) return true
-      if (
-        trimmed.includes("youtube.com") ||
-        trimmed.includes("youtu.be") ||
-        trimmed.includes("vimeo.com") ||
-        trimmed.includes("google.com/maps")
-      ) {
-        return true
-      }
-      return false
-    }
+    const isRfoParam = searchParams.get("isRfo") || searchParams.get("is_rfo")
 
     if (priceParam) {
       setPrice(priceParam)
     }
+    if (isRfoParam) {
+      const normalized = isRfoParam.toLowerCase()
+      setIsRfo(normalized === "1" || normalized === "true" || normalized === "yes")
+    }
     if (unitParam) {
       setUnitName(unitParam)
-      // Use provided image or find unit image
       if (unitImageParam) {
         const decoded = decodeURIComponent(unitImageParam)
-        if (!looksLikeEmbed(decoded)) {
-          setUnitImage(decoded)
-        }
+        setUnitMedia(decoded)
+        setUnitImageForExport(toImagePreviewUrl(decoded))
       } else {
         const unitData = findUnitByDisplayName(unitParam)
         if (unitData) {
-          if (!looksLikeEmbed(unitData.unit.imageUrl)) {
-            setUnitImage(unitData.unit.imageUrl)
+          setUnitMedia(unitData.unit.imageUrl)
+          setUnitImageForExport(toImagePreviewUrl(unitData.unit.imageUrl))
+          if (typeof unitData.unit.isRFO === "boolean") {
+            setIsRfo(unitData.unit.isRFO)
           }
         }
       }
@@ -125,21 +127,30 @@ export function LoanCalculator() {
   }, [searchParams])
 
   useEffect(() => {
-    const label = clientName ? `Aman Group • ${clientName} • Confidential` : "Aman Group • Loan Estimate • Confidential"
-    setWatermarkText(label)
-  }, [clientName])
+    if (!isRfo) return
+    if (spotDownPaymentPercent < 10) {
+      setSpotDownPaymentPercent(10)
+      return
+    }
+    if (spotDownPaymentPercent > downPaymentPercent) {
+      setSpotDownPaymentPercent(downPaymentPercent)
+    }
+  }, [isRfo, spotDownPaymentPercent, downPaymentPercent])
 
   useEffect(() => {
+    const triggerFlash = () => {
+      setFlashWhite(true)
+      window.setTimeout(() => setFlashWhite(false), 220)
+    }
+
     const handleVisibility = () => {
-      setShowPrivacyShield(document.hidden)
+      if (document.hidden) {
+        triggerFlash()
+      }
     }
 
     const handleBlur = () => {
-      setShowPrivacyShield(true)
-    }
-
-    const handleFocus = () => {
-      setShowPrivacyShield(false)
+      triggerFlash()
     }
 
     const handleKeydown = (event: KeyboardEvent) => {
@@ -149,33 +160,18 @@ export function LoanCalculator() {
 
       if (isPrintScreen || isPrintOrSave) {
         event.preventDefault()
-        setShowPrivacyShield(true)
-        window.setTimeout(() => setShowPrivacyShield(false), 1500)
+        triggerFlash()
       }
-    }
-
-    const handleBeforePrint = () => {
-      setShowPrivacyShield(true)
-    }
-
-    const handleAfterPrint = () => {
-      setShowPrivacyShield(false)
     }
 
     document.addEventListener("visibilitychange", handleVisibility)
     window.addEventListener("blur", handleBlur)
-    window.addEventListener("focus", handleFocus)
     window.addEventListener("keydown", handleKeydown, true)
-    window.addEventListener("beforeprint", handleBeforePrint)
-    window.addEventListener("afterprint", handleAfterPrint)
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibility)
       window.removeEventListener("blur", handleBlur)
-      window.removeEventListener("focus", handleFocus)
       window.removeEventListener("keydown", handleKeydown, true)
-      window.removeEventListener("beforeprint", handleBeforePrint)
-      window.removeEventListener("afterprint", handleAfterPrint)
     }
   }, [])
 
@@ -184,6 +180,13 @@ export function LoanCalculator() {
     if (isNaN(priceValue) || priceValue <= 0) return
 
     const dpAmount = priceValue * (downPaymentPercent / 100)
+    const actualSpotPercent = isRfo ? Math.max(10, Math.min(spotDownPaymentPercent, downPaymentPercent)) : 0
+    const spotDownPaymentAmount = priceValue * (actualSpotPercent / 100)
+    const spotDiscountAmount = spotDownPaymentAmount * 0.05
+    const spotTotalPayable = spotDownPaymentAmount - spotDiscountAmount
+    const dpAfterSpotAmount = Math.max(dpAmount - spotDownPaymentAmount, 0)
+    const dpAfterSpotMonthly6 = dpAfterSpotAmount / 6
+    const dpAfterSpotRequiredIncome = dpAfterSpotMonthly6 / 0.40
     const resFee = reservationFees[propertyOption]
     const balance = priceValue - dpAmount
     const maxLoan = pagibigMaxLoan[propertyOption]
@@ -252,9 +255,17 @@ export function LoanCalculator() {
     })
 
     setResults({
+      isRfo,
       price: priceValue,
       downPaymentPercent,
       downPaymentAmount: dpAmount,
+      spotDownPaymentPercent: actualSpotPercent,
+      spotDownPaymentAmount,
+      spotDiscountAmount,
+      spotTotalPayable,
+      dpAfterSpotAmount,
+      dpAfterSpotMonthly6,
+      dpAfterSpotRequiredIncome,
       reservationFee: resFee,
       option1Monthly: option1,
       option1RequiredIncome,
@@ -308,10 +319,10 @@ export function LoanCalculator() {
             ? `<p><strong>Prepared by:</strong> ${agentName}</p>`
             : ""
 
-    const unitImageHtml = unitImage
+    const unitImageHtml = unitImageForExport
       ? `<div class="two-column-layout">
           <div class="image-column">
-            <img src="${unitImage}" alt="${unitName}" style="max-width: 300px; max-height: 225px; border-radius: 8px; border: 1px solid #e5e7eb;" />
+            <img src="${unitImageForExport}" alt="${unitName}" style="max-width: 300px; max-height: 225px; border-radius: 8px; border: 1px solid #e5e7eb;" />
             <p style="font-size: 10px; color: #6b7280; margin-top: 4px;">${unitName}</p>
           </div>
           <div class="summary-column">
@@ -468,6 +479,36 @@ export function LoanCalculator() {
 
         ${unitImageHtml}
 
+        ${results.isRfo ? `
+        <div class="section">
+          <h2>Spot Down Payment</h2>
+          <div class="row">
+            <span class="label">Spot Down Payment (${results.spotDownPaymentPercent}%)</span>
+            <span class="value">${formatCurrency(results.spotDownPaymentAmount)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Discount (5%)</span>
+            <span class="value">${formatCurrency(results.spotDiscountAmount)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Total Spot Down Payment Payable</span>
+            <span class="value">${formatCurrency(results.spotTotalPayable)}</span>
+          </div>
+          <h2>Down Payment Options</h2>
+          <div class="row">
+            <span class="label">Net Down Payment (DP - Spot DP)</span>
+            <span class="value">${formatCurrency(results.dpAfterSpotAmount)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Monthly Payment (6 Months, 0% Interest)</span>
+            <span class="value">${formatCurrency(results.dpAfterSpotMonthly6)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Required Income</span>
+            <span class="value">${formatCurrency(results.dpAfterSpotRequiredIncome)}</span>
+          </div>
+        </div>
+        ` : `
         <div class="section">
           <h2>Down Payment Options</h2>
           <div class="two-column">
@@ -482,7 +523,6 @@ export function LoanCalculator() {
                 <span class="value">${formatCurrency(results.option1RequiredIncome)}</span>
               </div>
             </div>
-            
             <div class="column">
               <h3>Option 2: Down Payment (2 Years to Pay)</h3>
               <div class="row">
@@ -504,6 +544,7 @@ export function LoanCalculator() {
             </div>
           </div>
         </div>
+        `}
 
         <div class="section">
           <h2>Financing Options</h2>
@@ -645,8 +686,8 @@ export function LoanCalculator() {
 
     // Convert image to data URL if available
     let unitImageDataUrl = ''
-    if (unitImage) {
-      unitImageDataUrl = await imageUrlToDataUrl(unitImage)
+    if (unitImageForExport) {
+      unitImageDataUrl = await imageUrlToDataUrl(unitImageForExport)
     }
 
     const unitImageHtml = unitImageDataUrl
@@ -806,8 +847,38 @@ export function LoanCalculator() {
 
         ${unitImageHtml}
 
+        ${results.isRfo ? `
         <div class="section">
-          <h2>Downpayment Options</h2>
+          <h2>Spot Down Payment</h2>
+          <div class="row">
+            <span class="label">Spot Down Payment (${results.spotDownPaymentPercent}%)</span>
+            <span class="value">${formatCurrency(results.spotDownPaymentAmount)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Discount (5%)</span>
+            <span class="value">${formatCurrency(results.spotDiscountAmount)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Total Spot Down Payment Payable</span>
+            <span class="value">${formatCurrency(results.spotTotalPayable)}</span>
+          </div>
+          <h2>Down Payment Options</h2>
+          <div class="row">
+            <span class="label">Net Down Payment (DP - Spot DP)</span>
+            <span class="value">${formatCurrency(results.dpAfterSpotAmount)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Monthly Payment (6 Months, 0% Interest)</span>
+            <span class="value">${formatCurrency(results.dpAfterSpotMonthly6)}</span>
+          </div>
+          <div class="row">
+            <span class="label">Required Income</span>
+            <span class="value">${formatCurrency(results.dpAfterSpotRequiredIncome)}</span>
+          </div>
+        </div>
+        ` : `
+        <div class="section">
+          <h2>Down Payment Options</h2>
           <div class="two-column">
             <div class="column">
               <h3>Option 1: Monthly DP in 12 Months (0% Interest)</h3>
@@ -820,7 +891,6 @@ export function LoanCalculator() {
                 <span class="value">${formatCurrency(results.option1RequiredIncome)}</span>
               </div>
             </div>
-            
             <div class="column">
               <h3>Option 2: Down Payment (2 Years to Pay)</h3>
               <div class="row">
@@ -842,6 +912,7 @@ export function LoanCalculator() {
             </div>
           </div>
         </div>
+        `}
 
         <div class="section">
           <h2>Financing Options</h2>
@@ -1045,7 +1116,9 @@ export function LoanCalculator() {
                 className="h-8"
               />
             </div>
+          </div>
 
+          <div className={`grid gap-3 grid-cols-1 ${isRfo ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
             <div className="space-y-1">
               <Label htmlFor="property-option" className="text-sm">Property Option</Label>
               <Select value={propertyOption} onValueChange={(value: PropertyOption) => setPropertyOption(value)}>
@@ -1080,6 +1153,29 @@ export function LoanCalculator() {
                 </SelectContent>
               </Select>
             </div>
+
+            {isRfo && (
+              <div className="space-y-1">
+                <Label htmlFor="spot-downpayment" className="text-sm">Spot Down Payment</Label>
+                <Select
+                  value={spotDownPaymentPercent.toString()}
+                  onValueChange={(value) => setSpotDownPaymentPercent(Number.parseInt(value))}
+                >
+                  <SelectTrigger className="w-full h-8" id="spot-downpayment">
+                    <SelectValue placeholder="Select %" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: Math.floor((downPaymentPercent - 10) / 5) + 1 }, (_, index) => 10 + index * 5)
+                      .filter((percent) => percent <= downPaymentPercent)
+                      .map((percent) => (
+                        <SelectItem key={percent} value={percent.toString()}>
+                          {percent}%
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-center">
@@ -1099,45 +1195,43 @@ export function LoanCalculator() {
           className="space-y-3 relative select-none"
           onContextMenu={(event) => event.preventDefault()}
         >
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none z-10 opacity-15"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(135deg, rgba(22,101,52,0.35) 0, rgba(22,101,52,0.35) 10px, rgba(22,101,52,0) 10px, rgba(22,101,52,0) 20px)",
-            }}
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center"
-          >
-            <div className="text-primary/30 text-xs md:text-sm font-semibold rotate-[-20deg] tracking-[0.3em] text-center px-6">
-              {watermarkText}
-            </div>
-          </div>
-
-          {showPrivacyShield && (
-            <div className="absolute inset-0 z-30 bg-white/90 backdrop-blur-sm flex items-center justify-center text-center px-6">
-              <div>
-                <p className="text-sm font-semibold text-primary">Screen capture disabled</p>
-                <p className="text-xs text-muted-foreground mt-1">This view is protected to discourage screenshots.</p>
-              </div>
-            </div>
-          )}
+          {flashWhite && <div className="absolute inset-0 z-30 bg-white pointer-events-none" />}
           {/* Unit Image */}
-          {unitImage && (
+          {unitMedia && (
             <Card>
               <CardContent className="p-4">
                 <div className="aspect-[4/3] max-w-md mx-auto overflow-hidden rounded-lg border">
-                  <Image
-                    src={unitImage}
+                  <SmartMedia
+                    src={unitMedia}
                     alt={unitName}
                     width={400}
                     height={300}
                     className="h-full w-full object-cover"
+                    embedClassName="h-full w-full border-0"
                   />
                 </div>
                 <p className="text-center text-sm text-muted-foreground mt-2">{unitName}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {results.isRfo && (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="p-2">
+                <div className="grid gap-2 grid-cols-1 md:grid-cols-3">
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground mb-1">Spot Down Payment ({results.spotDownPaymentPercent}%)</p>
+                    <p className="text-sm font-bold">{formatCurrency(results.spotDownPaymentAmount)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground mb-1">Discount (5%)</p>
+                    <p className="text-sm font-bold text-primary">{formatCurrency(results.spotDiscountAmount)}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-muted-foreground mb-1">Total Spot DP Payable</p>
+                    <p className="text-sm font-bold text-primary">{formatCurrency(results.spotTotalPayable)}</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -1176,60 +1270,84 @@ export function LoanCalculator() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div>
-                  <h4 className="font-medium mb-2 text-sm">Option 1: Monthly DP in 12 Months (0% Interest)</h4>
-                  <div className="border rounded-md p-2 bg-gray-50">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Monthly Payment</p>
-                        <p className="text-sm font-bold text-primary">{formatCurrency(results.option1Monthly)}</p>
-                      </div>
-                      <Separator orientation="vertical" className="h-8 mx-2" />
-                      <div>
-                        <p className="text-xs text-muted-foreground">Required Income</p>
-                        <p className="text-sm font-bold text-primary">{formatCurrency(results.option1RequiredIncome)}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-medium mb-2 text-sm">Option 2: Down Payment (2 Years to Pay)</h4>
-                  <div className="space-y-2">
+                {results.isRfo ? (
+                  <div>
+                    <h4 className="font-medium mb-2 text-sm">Down Payment less Spot Down Payment (6 Months, 0% Interest)</h4>
                     <div className="border rounded-md p-2 bg-gray-50">
-                      <p className="text-xs text-muted-foreground mb-1">Year 1 (0% Interest)</p>
-                      <div className="flex justify-between items-center">
+                      <div className="grid gap-2 grid-cols-1 md:grid-cols-3">
+                        <div>
+                          <p className="text-xs text-muted-foreground">Net Down Payment</p>
+                          <p className="text-sm font-bold">{formatCurrency(results.dpAfterSpotAmount)}</p>
+                        </div>
                         <div>
                           <p className="text-xs text-muted-foreground">Monthly Payment</p>
-                          <p className="text-sm font-bold">{formatCurrency(results.option2Year1Monthly)}</p>
+                          <p className="text-sm font-bold text-primary">{formatCurrency(results.dpAfterSpotMonthly6)}</p>
                         </div>
-                      </div>
-                    </div>
-                    <div className="border rounded-md p-2 bg-gray-50">
-                      <p className="text-xs text-muted-foreground mb-1">Year 2 (8.5% Interest)</p>
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-xs text-muted-foreground">Monthly Payment</p>
-                          <p className="text-sm font-bold">{formatCurrency(results.option2Year2WithInterest)}</p>
-                        </div>
-                        <Separator orientation="vertical" className="h-8 mx-2" />
                         <div>
                           <p className="text-xs text-muted-foreground">Required Income</p>
-                          <p className="text-sm font-bold text-primary">{formatCurrency(results.option2Year2WithInterestRequiredIncome)}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="border rounded-md p-2 bg-gray-50">
-                      <p className="text-xs text-muted-foreground mb-1">Year 2 (Waived Interest)</p>
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-xs text-muted-foreground">Monthly Payment</p>
-                          <p className="text-sm font-bold">{formatCurrency(results.option2Year2Waived)}</p>
+                          <p className="text-sm font-bold text-primary">{formatCurrency(results.dpAfterSpotRequiredIncome)}</p>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    <div>
+                      <h4 className="font-medium mb-2 text-sm">Option 1: Monthly DP in 12 Months (0% Interest)</h4>
+                      <div className="border rounded-md p-2 bg-gray-50">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Monthly Payment</p>
+                            <p className="text-sm font-bold text-primary">{formatCurrency(results.option1Monthly)}</p>
+                          </div>
+                          <Separator orientation="vertical" className="h-8 mx-2" />
+                          <div>
+                            <p className="text-xs text-muted-foreground">Required Income</p>
+                            <p className="text-sm font-bold text-primary">{formatCurrency(results.option1RequiredIncome)}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium mb-2 text-sm">Option 2: Down Payment (2 Years to Pay)</h4>
+                      <div className="space-y-2">
+                        <div className="border rounded-md p-2 bg-gray-50">
+                          <p className="text-xs text-muted-foreground mb-1">Year 1 (0% Interest)</p>
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="text-xs text-muted-foreground">Monthly Payment</p>
+                              <p className="text-sm font-bold">{formatCurrency(results.option2Year1Monthly)}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="border rounded-md p-2 bg-gray-50">
+                          <p className="text-xs text-muted-foreground mb-1">Year 2 (8.5% Interest)</p>
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="text-xs text-muted-foreground">Monthly Payment</p>
+                              <p className="text-sm font-bold">{formatCurrency(results.option2Year2WithInterest)}</p>
+                            </div>
+                            <Separator orientation="vertical" className="h-8 mx-2" />
+                            <div>
+                              <p className="text-xs text-muted-foreground">Required Income</p>
+                              <p className="text-sm font-bold text-primary">{formatCurrency(results.option2Year2WithInterestRequiredIncome)}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="border rounded-md p-2 bg-gray-50">
+                          <p className="text-xs text-muted-foreground mb-1">Year 2 (Waived Interest)</p>
+                          <div className="flex justify-between items-center">
+                            <div>
+                              <p className="text-xs text-muted-foreground">Monthly Payment</p>
+                              <p className="text-sm font-bold">{formatCurrency(results.option2Year2Waived)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -1386,3 +1504,5 @@ export function LoanCalculator() {
     </div>
   )
 }
+
+
