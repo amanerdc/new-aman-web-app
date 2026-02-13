@@ -77,7 +77,8 @@ export function LoanCalculator() {
   const [unitImageForExport, setUnitImageForExport] = useState<string | null>(null)
   const [isRfo, setIsRfo] = useState<boolean>(false)
   const [spotDownPaymentPercent, setSpotDownPaymentPercent] = useState<number>(10)
-  const [flashWhite, setFlashWhite] = useState<boolean>(false)
+  const [showPrivacyShield, setShowPrivacyShield] = useState<boolean>(false)
+  const shieldTimerRef = useRef<number | null>(null)
 
   // Pre-fill from URL params
   useEffect(() => {
@@ -138,19 +139,24 @@ export function LoanCalculator() {
   }, [isRfo, spotDownPaymentPercent, downPaymentPercent])
 
   useEffect(() => {
-    const triggerFlash = () => {
-      setFlashWhite(true)
-      window.setTimeout(() => setFlashWhite(false), 220)
+    const activatePrivacyShield = (durationMs = 3500) => {
+      setShowPrivacyShield(true)
+      if (shieldTimerRef.current) {
+        window.clearTimeout(shieldTimerRef.current)
+      }
+      shieldTimerRef.current = window.setTimeout(() => {
+        setShowPrivacyShield(false)
+      }, durationMs)
     }
 
     const handleVisibility = () => {
       if (document.hidden) {
-        triggerFlash()
+        activatePrivacyShield(5000)
       }
     }
 
     const handleBlur = () => {
-      triggerFlash()
+      activatePrivacyShield(5000)
     }
 
     const handleKeydown = (event: KeyboardEvent) => {
@@ -160,7 +166,7 @@ export function LoanCalculator() {
 
       if (isPrintScreen || isPrintOrSave) {
         event.preventDefault()
-        triggerFlash()
+        activatePrivacyShield(6000)
       }
     }
 
@@ -172,6 +178,9 @@ export function LoanCalculator() {
       document.removeEventListener("visibilitychange", handleVisibility)
       window.removeEventListener("blur", handleBlur)
       window.removeEventListener("keydown", handleKeydown, true)
+      if (shieldTimerRef.current) {
+        window.clearTimeout(shieldTimerRef.current)
+      }
     }
   }, [])
 
@@ -1195,7 +1204,14 @@ export function LoanCalculator() {
           className="space-y-3 relative select-none"
           onContextMenu={(event) => event.preventDefault()}
         >
-          {flashWhite && <div className="absolute inset-0 z-30 bg-white pointer-events-none" />}
+          {showPrivacyShield && (
+            <div className="absolute inset-0 z-30 bg-background/85 backdrop-blur-md pointer-events-auto flex items-center justify-center text-center px-6">
+              <div>
+                <p className="text-sm font-semibold text-primary">Sensitive view temporarily blurred</p>
+                <p className="text-xs text-muted-foreground mt-1">Content will be visible again shortly.</p>
+              </div>
+            </div>
+          )}
           {/* Unit Image */}
           {unitMedia && (
             <Card>

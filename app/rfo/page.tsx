@@ -32,8 +32,8 @@ export default async function RFOPage() {
     }))
 
   return (
-    <div className="p-12">
-      <div className="container">
+    <div className="py-12 px-4 sm:px-6 lg:px-8">
+      <div className="container max-w-7xl mx-auto">
         {/* Back Button */}
         <Button asChild variant="ghost" className="mb-6 -ml-2">
           <Link href="/properties" className="gap-2">
@@ -144,7 +144,7 @@ export default async function RFOPage() {
                           </Button>
                           <Button asChild className="flex-1">
                             <Link
-                              href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(unit.seriesName + ' - ' + unit.name)}&unitImage=${encodeURIComponent(unit.imageUrl || '')}`}
+                              href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(unit.seriesName + ' - ' + unit.name)}&unitImage=${encodeURIComponent(unit.imageUrl || '')}&isRfo=1`}
                             >
                               Calculate Loan
                             </Link>
