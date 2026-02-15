@@ -672,6 +672,20 @@ export function LoanCalculator() {
               <li>
                 Prices, discounts & interest rates are subject to change without prior notice.
               </li>
+
+              {results.isRfo && (
+                <>
+                  <li className="mt-2 font-medium text-amber-700">
+                    SPOT DOWNPAYMENT TIMEFRAME:
+                  </li>
+                  <li>
+                    SPOT DOWNPAYMENT can be paid either in full or within 7 days from the date of initial deposit.
+                  </li>
+                  <li>
+                    First set of PDCs (6 PDCs for the remaining 10% DP) must be provided within 7 days upon the date of initial deposit.
+                  </li>
+                </>
+              )}
             </ul>
         </div>
       </body>
