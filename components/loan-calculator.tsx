@@ -65,6 +65,7 @@ type LoanResults = {
 export function LoanCalculator() {
   const searchParams = useSearchParams()
   const resultsRef = useRef<HTMLDivElement>(null)
+  const [isMounted, setIsMounted] = useState(false)
 
   const [price, setPrice] = useState<string>("")
   const [propertyOption, setPropertyOption] = useState<PropertyOption>("nur_house_lot")
@@ -139,6 +140,10 @@ export function LoanCalculator() {
   }, [isRfo, spotDownPaymentPercent, downPaymentPercent])
 
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
     const activatePrivacyShield = (durationMs = 3500) => {
       setShowPrivacyShield(true)
       if (shieldTimerRef.current) {
@@ -183,6 +188,10 @@ export function LoanCalculator() {
       }
     }
   }, [])
+
+  if (!isMounted) {
+    return <div className="text-center py-12">Loading calculator...</div>
+  }
 
   const calculateLoan = () => {
     const priceValue = Number.parseFloat(price)
@@ -646,15 +655,22 @@ export function LoanCalculator() {
                 The availability of lots and properties may change without prior notice.
               </li>
               <li>
-                Additional charges such as reservation fees, processing fees, and documentary stamp taxes are not included in these calculations.
+                RESERVATION FEE is part of the Downpayment, NON-REFUNDABLE and NON-TRANSFERABLE.
               </li>
               <li>
-                The standard reservation fee is ₱25,000.00 and is non-refundable but deductible from the total contract price.
+                Above Pricing is INCLUSIVE of (O.C.) applicable government transfer fees, taxes & 12% EVAT.
               </li>
               <li>
-                Interest rates are subject to change without prior notice.</li>
-              <li> 
-                Please consult with our sales representatives for the most current rates and terms.
+                Above LOT PRICING is inclusive of advantage cost in case of SPECIAL LOTS (ie. corner, east, etc.)
+              </li>
+              <li>
+                Lot purchase shall be covered with Contract to Sell with AMAN ENGINEERING ENTERPRISES (AEE).
+              </li>
+              <li>
+                Building contract quotation shall be covered by Construction Agreement with In-house contractor.
+              </li>
+              <li>
+                Prices, discounts & interest rates are subject to change without prior notice.
               </li>
             </ul>
         </div>
@@ -1504,12 +1520,45 @@ export function LoanCalculator() {
                 <div>
                   <p className="font-medium text-amber-800 mb-1 text-sm">Important Notes</p>
                   <ul className="text-xs text-muted-foreground space-y-0.5 list-disc pl-3">
-                    <li>This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.</li>
-                    <li>The availability of lots and properties may change without prior notice.</li>
-                    <li>Additional charges such as reservation fees, processing fees, and documentary stamp taxes are not included in these calculations.</li>
-                    <li>The standard reservation fee is ₱25,000.00 and is non-refundable but deductible from the total contract price.</li>
-                    <li>Interest rates are subject to change without prior notice.</li>
-                    <li>Please consult with our sales representatives for the most current rates and terms.</li>
+                    <li>
+                      This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.
+                    </li>
+                    <li>
+                      The availability of lots and properties may change without prior notice.
+                    </li>
+                    <li>
+                      RESERVATION FEE is part of the Downpayment, NON-REFUNDABLE and NON-TRANSFERABLE.
+                    </li>
+                    <li>
+                      Above Pricing is INCLUSIVE of (O.C.) applicable government transfer fees, taxes & 12% EVAT.
+                    </li>
+                    <li>
+                      Above LOT PRICING is inclusive of advantage cost in case of SPECIAL LOTS (ie. corner, east, etc.)
+                    </li>
+                    <li>
+                      Lot purchase shall be covered with Contract to Sell with AMAN ENGINEERING ENTERPRISES (AEE).
+                    </li>
+                    <li>
+                      Building contract quotation shall be covered by Construction Agreement with In-house contractor.
+                    </li>
+                    <li>
+                      Prices, discounts & interest rates are subject to change without prior notice.
+                    </li>
+
+                    {results.isRfo && (
+                      <>
+                        <li className="mt-2 font-medium text-amber-700">
+                          SPOT DOWNPAYMENT TIMEFRAME:
+                        </li>
+                        <li>
+                          SPOT DOWNPAYMENT can be paid either in full or within 7 days from the date of initial deposit.
+                        </li>
+                        <li>
+                          First set of PDCs (6 PDCs for the remaining 10% DP) must be provided within 7 days upon the date of initial deposit.
+                        </li>
+                      </>
+                    )}
+
                   </ul>
                 </div>
               </div>
