@@ -48,6 +48,9 @@ export default async function LotDetailPage({
     Internet: <Wifi className="h-4 w-4" />,
     Drainage: <Building2 className="h-4 w-4" />,
   }
+  const features = (lot.features || []).filter((feature: string) => feature?.trim().length > 0)
+  const utilities = (lot.utilities || []).filter((utility: string) => utility?.trim().length > 0)
+  const nearbyAmenities = (lot.nearbyAmenities || []).filter((amenity: string) => amenity?.trim().length > 0)
 
   return (
     <div className="py-8">
@@ -177,7 +180,7 @@ export default async function LotDetailPage({
         {/* Features and Utilities */}
         <div className="grid gap-6 lg:grid-cols-2 mb-8 justify-center">
           {/* Features */}
-          <Card>
+          <Card className="min-h-[260px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -185,44 +188,56 @@ export default async function LotDetailPage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                {(lot.features || []).map((feature: string, index: number) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              {features.length > 0 ? (
+                <ul className="space-y-2">
+                  {features.map((feature: string, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">No data available.</p>
+              )}
             </CardContent>
           </Card>
 
           {/* Utilities & Amenities */}
-          <Card>
+          <Card className="min-h-[260px]">
             <CardHeader>
               <CardTitle>Utilities & Nearby Amenities</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <h4 className="font-medium text-sm mb-2">Available Utilities</h4>
-                <div className="flex flex-wrap gap-2">
-                  {(lot.utilities || []).map((utility: string, index: number) => (
-                    <Badge key={index} variant="outline" className="gap-1">
-                      {utilityIcons[utility]}
-                      {utility}
-                    </Badge>
-                  ))}
-                </div>
+                {utilities.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {utilities.map((utility: string, index: number) => (
+                      <Badge key={index} variant="outline" className="gap-1">
+                        {utilityIcons[utility]}
+                        {utility}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No data available.</p>
+                )}
               </div>
               <Separator />
               <div>
                 <h4 className="font-medium text-sm mb-2">Nearby Amenities</h4>
-                <div className="flex flex-wrap gap-2">
-                  {(lot.nearbyAmenities || []).map((amenity: string, index: number) => (
-                    <Badge key={index} variant="secondary">
-                      {amenity}
-                    </Badge>
-                  ))}
-                </div>
+                {nearbyAmenities.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {nearbyAmenities.map((amenity: string, index: number) => (
+                      <Badge key={index} variant="secondary">
+                        {amenity}
+                      </Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">No data available.</p>
+                )}
               </div>
             </CardContent>
           </Card>

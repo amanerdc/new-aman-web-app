@@ -100,9 +100,15 @@ export function LoanCalculator() {
     if (unitParam) {
       setUnitName(unitParam)
       if (unitImageParam) {
-        const decoded = decodeURIComponent(unitImageParam)
-        setUnitMedia(decoded)
-        setUnitImageForExport(toImagePreviewUrl(decoded))
+        let decodedImage = unitImageParam
+        try {
+          decodedImage = decodeURIComponent(unitImageParam)
+        } catch {
+          // URLSearchParams already decodes values; keep original if decoding fails.
+          decodedImage = unitImageParam
+        }
+        setUnitMedia(decodedImage)
+        setUnitImageForExport(toImagePreviewUrl(decodedImage))
       } else {
         const unitData = findUnitByDisplayName(unitParam)
         if (unitData) {
