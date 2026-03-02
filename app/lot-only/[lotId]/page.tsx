@@ -140,7 +140,7 @@ export default async function LotDetailPage({
 
             <Button asChild size="lg" className="w-full gap-2">
               <Link
-                href={`/calculator?price=${lot.price}&unit=${encodeURIComponent(lot.name)}&option=${lot.propertyOption}${agentParam ? `&agent=${agentParam}` : ''}`}
+                href={`/calculator?price=${lot.price}&unit=${encodeURIComponent(lot.name)}&unitImage=${encodeURIComponent(lot.imageUrl || "")}&option=${lot.propertyOption}${agentParam ? `&agent=${agentParam}` : ''}`}
               >
                 <Calculator className="h-5 w-5" />
                 Calculate Loan

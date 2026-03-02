@@ -19,16 +19,21 @@ export const metadata = {
 export default async function RFOPage() {
   const allUnits = await getUnits()
   const allSeries = await getSeries()
-  
+
+  const textOrFallback = (value: string | null | undefined) => {
+    const trimmed = value?.trim()
+    return trimmed ? trimmed : "No data available."
+  }
+
   // Create a map for quick series lookup
-  const seriesMap = new Map(allSeries.map(s => [s.id, s]))
-  
+  const seriesMap = new Map(allSeries.map((s) => [s.id, s]))
+
   // Filter for RFO units and add series info
   const rfoUnits = allUnits
-    .filter(unit => unit.is_rfo === true)
-    .map(unit => ({
+    .filter((unit) => unit.is_rfo === true)
+    .map((unit) => ({
       ...unit,
-      seriesName: seriesMap.get(unit.series_id)?.name || 'Unknown Series'
+      seriesName: seriesMap.get(unit.series_id)?.name || "No data available.",
     }))
 
   return (
@@ -106,12 +111,12 @@ export default async function RFOPage() {
                 {rfoUnits.map((unit) => (
                   <Card
                     key={unit.id}
-                    className="overflow-hidden border-border/50 hover:border-primary/50 transition-all"
+                    className="overflow-hidden h-full min-h-[420px] border-border/50 hover:border-primary/50 transition-all"
                   >
                     <div className="aspect-[16/10] overflow-hidden relative">
                       <SmartMedia
                         src={unit.imageUrl}
-                        alt={unit.name}
+                        alt={textOrFallback(unit.name)}
                         width={400}
                         height={250}
                         className="h-full w-full object-cover"
@@ -123,19 +128,21 @@ export default async function RFOPage() {
                     </div>
                     <CardContent className="p-4">
                       <h3 className="font-semibold text-lg mb-1">
-                        {unit.seriesName} - {unit.name}
+                        {textOrFallback(unit.seriesName)} - {textOrFallback(unit.name)}
                       </h3>
-                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{unit.description}</p>
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{textOrFallback(unit.description)}</p>
 
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
                         <MapPin className="h-3.5 w-3.5" />
-                        <span className="line-clamp-1">{unit.location}</span>
+                        <span className="line-clamp-1">{textOrFallback(unit.location)}</span>
                       </div>
 
                       <div className="space-y-3 pt-3 border-t border-border">
                         <div className="flex justify-between">
                           <span className="text-sm text-muted-foreground">Total Contract Price</span>
-                          <span className="font-bold text-primary">₱{unit.price.toLocaleString()}</span>
+                          <span className="font-bold text-primary">
+                            {unit.price > 0 ? `PHP ${unit.price.toLocaleString()}` : "No data available."}
+                          </span>
                         </div>
 
                         <div className="flex gap-2">
@@ -144,7 +151,7 @@ export default async function RFOPage() {
                           </Button>
                           <Button asChild className="flex-1">
                             <Link
-                              href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(unit.seriesName + ' - ' + unit.name)}&unitImage=${encodeURIComponent(unit.imageUrl || '')}&isRfo=1`}
+                              href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(unit.seriesName + " - " + unit.name)}&unitImage=${encodeURIComponent(unit.imageUrl || "")}&isRfo=1`}
                             >
                               Calculate Loan
                             </Link>
@@ -156,18 +163,20 @@ export default async function RFOPage() {
                 ))}
               </div>
             ) : (
-              <Card>
-                <CardContent className="py-12 text-center">
-                  <Home className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h2 className="text-xl font-semibold mb-2">No RFO Units Available</h2>
-                  <p className="text-muted-foreground mb-6">
-                    All our ready for occupancy units have been sold. Check out our other available properties.
-                  </p>
-                  <Button asChild>
-                    <Link href="/properties">Browse All Properties</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 justify-center">
+                <Card className="overflow-hidden h-full min-h-[420px] border-border/50 md:col-span-2 lg:col-span-1">
+                  <CardContent className="h-full p-6 flex flex-col items-center justify-center text-center">
+                    <Home className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h2 className="text-xl font-semibold mb-2">No data available.</h2>
+                    <p className="text-muted-foreground mb-6">
+                      All our ready for occupancy units have been sold. Check out our other available properties.
+                    </p>
+                    <Button asChild>
+                      <Link href="/properties">Browse All Properties</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
             )}
           </TabsContent>
 
@@ -210,9 +219,7 @@ export default async function RFOPage() {
             </Card>
           </TabsContent>
         </Tabs>
-
       </div>
     </div>
   )
 }
-

@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { SmartMedia } from "@/components/media/SmartMedia"
-import { Home, Building2 } from "lucide-react"
+import { Home } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getSeries, getUnits } from "@/lib/db"
@@ -16,14 +16,20 @@ export const metadata = {
 export default async function PropertiesPage() {
   const allSeries = await getSeries()
   const allUnits = await getUnits()
+  const hasSeries = allSeries.length > 0
 
   // Helper function to get units for a series
   const getUnitsForSeries = (seriesId: string) => {
     return allUnits.filter(unit => unit.series_id === seriesId)
   }
 
+  const textOrFallback = (value: string | null | undefined) => {
+    const trimmed = value?.trim()
+    return trimmed ? trimmed : "No data available."
+  }
+
   return (
-    <div className="p-12">
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="container">
         {/* Breadcrumb */}
         <div className="flex items-center text-sm mb-8">
@@ -45,14 +51,14 @@ export default async function PropertiesPage() {
         </div>
 
         {/* Series Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {allSeries.map((series) => {
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {hasSeries ? allSeries.map((series) => {
             const seriesUnits = getUnitsForSeries(series.id)
             const minPrice = seriesUnits.length > 0 ? Math.min(...seriesUnits.map(u => u.price)) : 0
             
             return (
               <Link key={series.id} href={`/properties/${series.id}`} className="group">
-                <Card className="overflow-hidden h-full border-border/50 transition-all hover:border-primary/50 hover:shadow-xl">
+                <Card className="overflow-hidden h-full min-h-[440px] border-border/50 transition-all hover:border-primary/50 hover:shadow-xl">
                   <div className="aspect-[16/10] overflow-hidden relative">
                     <SmartMedia
                       src={series.imageUrl}
@@ -64,21 +70,26 @@ export default async function PropertiesPage() {
                     />
                     <div className="absolute top-3 left-3 flex gap-2">
                       <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm">
-                        {series.project}
+                        {textOrFallback(series.project)}
                       </Badge>
                     </div>
                   </div>
                   <CardContent className="p-6">
-                    <h2 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{series.name}</h2>
-                    <p className="text-muted-foreground mb-4 line-clamp-2">{series.description}</p>
+                    <h2 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{textOrFallback(series.name)}</h2>
+                    <p className="text-muted-foreground mb-4 line-clamp-2">{textOrFallback(series.description)}</p>
 
                     {/* Features Preview */}
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {(series.features || []).slice(0, 3).map((feature, index) => (
+                      {(series.features || []).slice(0, 3).map((feature: unknown, index: number) => (
                         <span key={index} className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">
-                          {typeof feature === 'string' ? feature : feature}
+                          {typeof feature === 'string' ? textOrFallback(feature) : String(feature)}
                         </span>
                       ))}
+                      {(series.features || []).length === 0 && (
+                        <span className="text-xs text-muted-foreground px-2 py-1">
+                          No data available.
+                        </span>
+                      )}
                       {(series.features || []).length > 3 && (
                         <span className="text-xs text-muted-foreground px-2 py-1">
                           +{(series.features || []).length - 3} more
@@ -98,7 +109,7 @@ export default async function PropertiesPage() {
                                   minimumFractionDigits: 2,
                                   maximumFractionDigits: 2,
                                 })
-                              : 'Contact for pricing'}
+                              : 'No data available.'}
                           </p>
                         </div>
                       </div>
@@ -111,7 +122,13 @@ export default async function PropertiesPage() {
                 </Card>
               </Link>
             )
-          })}
+          }) : (
+            <Card className="overflow-hidden h-full min-h-[440px] border-border/50 sm:col-span-2 lg:col-span-1">
+              <CardContent className="p-6 flex items-center justify-center text-center text-muted-foreground">
+                No data available.
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>

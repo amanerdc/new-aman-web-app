@@ -15,8 +15,15 @@ export const metadata = {
 
 export default async function LotOnlyPage() {
   const lotOnlyProperties = await getLotOnlyProperties()
+  const hasLots = lotOnlyProperties.length > 0
+
+  const textOrFallback = (value: string | null | undefined) => {
+    const trimmed = value?.trim()
+    return trimmed ? trimmed : "No data available."
+  }
+
   return (
-    <div className="p-12">
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="container">
         {/* Breadcrumb */}
         <div className="flex items-center text-sm mb-8">
@@ -34,12 +41,12 @@ export default async function LotOnlyPage() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {lotOnlyProperties.map((lot) => (
-            <Card key={lot.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+          {hasLots ? lotOnlyProperties.map((lot) => (
+            <Card key={lot.id} className="overflow-hidden h-full min-h-[460px] hover:shadow-lg transition-shadow">
               <div className="aspect-[4/3] overflow-hidden">
                 <SmartMedia
                   src={lot.imageUrl}
-                  alt={lot.name}
+                  alt={textOrFallback(lot.name)}
                   width={600}
                   height={400}
                   className="h-full w-full object-cover transition-transform hover:scale-105"
@@ -47,45 +54,47 @@ export default async function LotOnlyPage() {
                 />
               </div>
               <CardHeader className="pb-2">
-                <div className="flex items-center justify-between mb-2">
-                  <Badge variant="outline" style={{ borderColor: lot.developerColor, color: lot.developerColor }}>
-                    {lot.developer}
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <Badge variant="outline" className="max-w-full truncate" style={{ borderColor: lot.developerColor, color: lot.developerColor }}>
+                    {textOrFallback(lot.developer)}
                   </Badge>
-                  <Badge variant={lot.status === "Available" ? "default" : "secondary"}>{lot.status}</Badge>
+                  <Badge variant={lot.status === "Available" ? "default" : "secondary"} className="max-w-full truncate">
+                    {textOrFallback(lot.status)}
+                  </Badge>
                 </div>
-                <CardTitle className="text-lg">{lot.name}</CardTitle>
+                <CardTitle className="text-lg break-words">{textOrFallback(lot.name)}</CardTitle>
               </CardHeader>
               <CardContent className="pb-2">
                 <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
                   <MapPin className="h-4 w-4" />
-                  <span className="line-clamp-1">{lot.project}</span>
+                  <span className="line-clamp-1">{textOrFallback(lot.project)}</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center gap-3">
                   <div>
                     <p className="text-xs text-muted-foreground">Lot Area</p>
-                    <p className="font-medium">{lot.lotArea}</p>
+                    <p className="font-medium break-words">{textOrFallback(lot.lotArea)}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-muted-foreground">Price</p>
                     <p className="font-bold text-primary">
-                      ₱{lot.price.toLocaleString('en-PH', {
+                      {lot.price > 0 ? `PHP ${lot.price.toLocaleString("en-PH", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
-                      })}
+                      })}` : "No data available."}
                     </p>
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="gap-2">
-                <Button asChild variant="outline" className="flex-1 bg-transparent">
+              <CardFooter className="flex-col sm:flex-row gap-2">
+                <Button asChild variant="outline" className="w-full sm:flex-1 bg-transparent">
                   <Link href={`/lot-only/${lot.id}`}>
                     <Eye className="h-4 w-4 mr-2" />
                     View Details
                   </Link>
                 </Button>
-                <Button asChild className="flex-1">
+                <Button asChild className="w-full sm:flex-1">
                   <Link
-                    href={`/calculator?price=${lot.price}&unit=${encodeURIComponent(lot.name)}&option=${lot.propertyOption}`}
+                    href={`/calculator?price=${lot.price}&unit=${encodeURIComponent(lot.name)}&unitImage=${encodeURIComponent(lot.imageUrl || "")}&option=${lot.propertyOption}`}
                   >
                     <Calculator className="h-4 w-4 mr-2" />
                     Calculate
@@ -93,11 +102,15 @@ export default async function LotOnlyPage() {
                 </Button>
               </CardFooter>
             </Card>
-          ))}
+          )) : (
+            <Card className="overflow-hidden h-full min-h-[460px] sm:col-span-2 lg:col-span-1">
+              <CardContent className="h-full p-6 flex items-center justify-center text-center text-muted-foreground">
+                No data available.
+              </CardContent>
+            </Card>
+          )}
         </div>
-
       </div>
     </div>
   )
 }
-

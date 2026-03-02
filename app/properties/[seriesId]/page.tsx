@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation"
 import Link from "next/link"
 import { SmartMedia } from "@/components/media/SmartMedia"
 import { ArrowLeft, MapPin, Ruler, CheckCircle2 } from "lucide-react"
@@ -24,6 +23,12 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
   const { seriesId } = await params
   const series = await getSeriesById(seriesId)
   const units = await getUnitsBySeriesId(seriesId)
+  const hasUnits = units.length > 0
+
+  const textOrFallback = (value: string | null | undefined) => {
+    const trimmed = value?.trim()
+    return trimmed ? trimmed : "No data available."
+  }
 
   if (!series) {
     console.log('Series not found for ID:', seriesId)
@@ -31,7 +36,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
   }
 
   return (
-    <div className="p-12">
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="container">
         {/* Back Button */}
         <Button asChild variant="ghost" className="mb-6 -ml-2">
@@ -57,17 +62,17 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
           <div className="space-y-6">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Badge variant="outline">{series.floor_area}</Badge>
+                <Badge variant="outline">{textOrFallback(series.floor_area)}</Badge>
                 {series.loft_ready && <Badge>Loft Ready</Badge>}
               </div>
-              <h1 className="text-3xl font-bold tracking-tight mb-2">{series.name}</h1>
+              <h1 className="text-3xl font-bold tracking-tight mb-2">{textOrFallback(series.name)}</h1>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                <span>{series.project}</span>
+                <span>{textOrFallback(series.project)}</span>
               </div>
             </div>
 
-            <p className="text-muted-foreground">{series.long_description}</p>
+            <p className="text-muted-foreground">{textOrFallback(series.long_description)}</p>
 
             <div>
               <h3 className="font-semibold mb-3">Key Features</h3>
@@ -75,9 +80,12 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                 {(series.features || []).map((feature: any, index: number) => (
                   <div key={index} className="flex items-center gap-2 text-sm">
                     <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                    <span>{typeof feature === 'string' ? feature : feature}</span>
+                    <span>{typeof feature === "string" ? textOrFallback(feature) : String(feature)}</span>
                   </div>
                 ))}
+                {(series.features || []).length === 0 && (
+                  <p className="text-sm text-muted-foreground">No data available.</p>
+                )}
               </div>
             </div>
 
@@ -91,7 +99,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })
-                    : 'Contact for pricing'}
+                    : 'No data available.'}
                 </p>
                 <br />
                 <p className="text-xs text-muted-foreground">*This calculation is for estimation purposes only. Actual rates and terms may vary. Please consult with Aman Group of Companies for accurate computations.</p>
@@ -109,12 +117,12 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
 
           <TabsContent value="units" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {units && units.length > 0 ? units.map((unit) => (
-                <Card key={unit.id} className="overflow-hidden border-border/50 hover:border-primary/50 transition-all">
+              {hasUnits ? units.map((unit) => (
+                <Card key={unit.id} className="overflow-hidden h-full min-h-[420px] border-border/50 hover:border-primary/50 transition-all">
                   <div className="aspect-[16/10] overflow-hidden relative">
                     <SmartMedia
                       src={unit.image_url}
-                      alt={unit.name}
+                      alt={textOrFallback(unit.name)}
                       width={400}
                       height={250}
                       className="h-full w-full object-cover"
@@ -132,13 +140,13 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                   </div>
                   <CardContent className="p-4">
                     <h3 className="font-semibold text-lg mb-1">
-                      {series.name} - {unit.name}
+                      {textOrFallback(series.name)} - {textOrFallback(unit.name)}
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{unit.description}</p>
+                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{textOrFallback(unit.description)}</p>
 
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
                       <MapPin className="h-3.5 w-3.5" />
-                      <span className="line-clamp-1">{unit.location}</span>
+                      <span className="line-clamp-1">{textOrFallback(unit.location)}</span>
                     </div>
 
                     <div className="space-y-3 pt-3 border-t border-border">
@@ -159,7 +167,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                         </Button>
                         <Button asChild className="flex-1">
                           <Link
-                            href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(series.name + " - " + unit.name)}`}
+                            href={`/calculator?price=${unit.price}&unit=${encodeURIComponent(series.name + " - " + unit.name)}&unitImage=${encodeURIComponent(unit.image_url || "")}&isRfo=${unit.is_rfo ? "1" : "0"}`}
                           >
                             Calculate Loan
                           </Link>
@@ -168,7 +176,13 @@ export default async function SeriesPage({ params }: { params: Promise<{ seriesI
                     </div>
                   </CardContent>
                 </Card>
-              )) : <p>No units available</p>}
+              )) : (
+                <Card className="overflow-hidden h-full min-h-[420px] border-border/50 md:col-span-2 lg:col-span-1">
+                  <CardContent className="h-full p-6 flex items-center justify-center text-center text-muted-foreground">
+                    No data available.
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </TabsContent>
 
