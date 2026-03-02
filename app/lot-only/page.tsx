@@ -40,9 +40,9 @@ export default async function LotOnlyPage() {
           <p className="text-muted-foreground">Browse our available residential lots and build your dream home</p>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {hasLots ? lotOnlyProperties.map((lot) => (
-            <Card key={lot.id} className="overflow-hidden h-full min-h-[460px] hover:shadow-lg transition-shadow">
+            <Card key={lot.id} className="w-full overflow-hidden h-full min-h-[460px] hover:shadow-lg transition-shadow">
               <div className="aspect-[4/3] overflow-hidden">
                 <SmartMedia
                   src={lot.imageUrl}
@@ -103,7 +103,7 @@ export default async function LotOnlyPage() {
               </CardFooter>
             </Card>
           )) : (
-            <Card className="overflow-hidden h-full min-h-[460px] sm:col-span-2 lg:col-span-1">
+            <Card className="w-full overflow-hidden h-full min-h-[460px] sm:col-span-2 lg:col-span-1">
               <CardContent className="h-full p-6 flex items-center justify-center text-center text-muted-foreground">
                 No data available.
               </CardContent>

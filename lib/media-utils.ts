@@ -130,6 +130,7 @@ export const toFloorPlanPdfUrl = (raw: string | null | undefined): string | null
 export const toImagePreviewUrl = (raw: string | null | undefined): string | null => {
   if (!raw?.trim()) return null
   const normalized = normalizeRawUrl(raw)
+  const lower = normalized.toLowerCase()
 
   const driveId = extractGoogleDriveFileId(normalized)
   if (driveId) {
@@ -139,6 +140,11 @@ export const toImagePreviewUrl = (raw: string | null | undefined): string | null
   const youtubeId = extractYouTubeVideoId(normalized)
   if (youtubeId) {
     return `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`
+  }
+
+  // Generic embeds are usually HTML pages and break <img> in PDF/image exports.
+  if (lower.includes("/embed/")) {
+    return null
   }
 
   const safeUrl = toSafeHttpUrl(normalized)

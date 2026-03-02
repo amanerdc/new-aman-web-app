@@ -78,8 +78,6 @@ export function LoanCalculator() {
   const [unitImageForExport, setUnitImageForExport] = useState<string | null>(null)
   const [isRfo, setIsRfo] = useState<boolean>(false)
   const [spotDownPaymentPercent, setSpotDownPaymentPercent] = useState<number>(10)
-  const [showPrivacyShield, setShowPrivacyShield] = useState<boolean>(false)
-  const shieldTimerRef = useRef<number | null>(null)
 
   const normalizeMediaValue = (value: string): string => {
     let normalized = value.trim().replace(/&amp;/gi, "&")
@@ -97,6 +95,14 @@ export function LoanCalculator() {
     }
 
     return normalized
+  }
+
+  const isLikelyImageUrl = (value: string): boolean => {
+    const normalized = value.trim().toLowerCase()
+    if (!normalized) return false
+    if (normalized.includes("drive.google.com/thumbnail")) return true
+    if (normalized.includes("img.youtube.com/")) return true
+    return /\.(png|jpe?g|webp|gif|bmp|svg)([?#].*)?$/.test(normalized)
   }
 
   // Pre-fill from URL params
@@ -160,52 +166,6 @@ export function LoanCalculator() {
 
   useEffect(() => {
     setIsMounted(true)
-  }, [])
-
-  useEffect(() => {
-    const activatePrivacyShield = (durationMs = 3500) => {
-      setShowPrivacyShield(true)
-      if (shieldTimerRef.current) {
-        window.clearTimeout(shieldTimerRef.current)
-      }
-      shieldTimerRef.current = window.setTimeout(() => {
-        setShowPrivacyShield(false)
-      }, durationMs)
-    }
-
-    const handleVisibility = () => {
-      if (document.hidden) {
-        activatePrivacyShield(5000)
-      }
-    }
-
-    const handleBlur = () => {
-      activatePrivacyShield(5000)
-    }
-
-    const handleKeydown = (event: KeyboardEvent) => {
-      const key = event.key
-      const isPrintScreen = key === "PrintScreen"
-      const isPrintOrSave = (event.ctrlKey || event.metaKey) && (key.toLowerCase() === "p" || key.toLowerCase() === "s")
-
-      if (isPrintScreen || isPrintOrSave) {
-        event.preventDefault()
-        activatePrivacyShield(6000)
-      }
-    }
-
-    document.addEventListener("visibilitychange", handleVisibility)
-    window.addEventListener("blur", handleBlur)
-    window.addEventListener("keydown", handleKeydown, true)
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibility)
-      window.removeEventListener("blur", handleBlur)
-      window.removeEventListener("keydown", handleKeydown, true)
-      if (shieldTimerRef.current) {
-        window.clearTimeout(shieldTimerRef.current)
-      }
-    }
   }, [])
 
   if (!isMounted) {
@@ -341,7 +301,7 @@ export function LoanCalculator() {
     }).format(value)
   }
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
     if (!results) return
 
     const printWindow = window.open("", "_blank")
@@ -356,10 +316,13 @@ export function LoanCalculator() {
             ? `<p><strong>Prepared by:</strong> ${agentName}</p>`
             : ""
 
-    const unitImageHtml = unitImageForExport
+    const pdfUnitImageDataUrl = unitImageForExport ? await imageUrlToDataUrl(unitImageForExport) : ""
+    const pdfUnitImageSrc = pdfUnitImageDataUrl || (unitImageForExport && isLikelyImageUrl(unitImageForExport) ? unitImageForExport : "")
+
+    const unitImageHtml = pdfUnitImageSrc
       ? `<div class="two-column-layout">
           <div class="image-column">
-            <img src="${unitImageForExport}" alt="${unitName}" style="max-width: 300px; max-height: 225px; border-radius: 8px; border: 1px solid #e5e7eb;" />
+            <img src="${pdfUnitImageSrc}" alt="${unitName}" style="max-width: 300px; max-height: 225px; border-radius: 8px; border: 1px solid #e5e7eb;" />
             <p style="font-size: 10px; color: #6b7280; margin-top: 4px;">${unitName}</p>
           </div>
           <div class="summary-column">
@@ -718,6 +681,9 @@ export function LoanCalculator() {
   const imageUrlToDataUrl = async (url: string): Promise<string> => {
     try {
       const response = await fetch(url)
+      if (!response.ok) return ""
+      const contentType = response.headers.get("content-type") || ""
+      if (!contentType.startsWith("image/")) return ""
       const blob = await response.blob()
       return new Promise((resolve) => {
         const reader = new FileReader()
@@ -727,7 +693,7 @@ export function LoanCalculator() {
     } catch (error) {
       console.error('Error converting image to data URL:', error)
       // Fallback to the original URL so exports still have a chance to render.
-      return url
+      return ""
     }
   }
 
@@ -1251,17 +1217,8 @@ export function LoanCalculator() {
         <div
           ref={resultsRef}
           id="loan-results"
-          className="space-y-3 relative select-none"
-          onContextMenu={(event) => event.preventDefault()}
+          className="space-y-3 relative"
         >
-          {showPrivacyShield && (
-            <div className="absolute inset-0 z-30 bg-background/85 backdrop-blur-md pointer-events-auto flex items-center justify-center text-center px-6">
-              <div>
-                <p className="text-sm font-semibold text-primary">Sensitive view temporarily blurred</p>
-                <p className="text-xs text-muted-foreground mt-1">Content will be visible again shortly.</p>
-              </div>
-            </div>
-          )}
           {/* Unit Image */}
           {unitMedia && (
             <Card>

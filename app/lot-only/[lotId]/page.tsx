@@ -178,9 +178,9 @@ export default async function LotDetailPage({
         </Card>
 
         {/* Features and Utilities */}
-        <div className="grid gap-6 lg:grid-cols-2 mb-8 justify-center">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-8">
           {/* Features */}
-          <Card className="min-h-[260px]">
+          <Card className="w-full h-full min-h-[260px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -204,7 +204,7 @@ export default async function LotDetailPage({
           </Card>
 
           {/* Utilities & Amenities */}
-          <Card className="min-h-[260px]">
+          <Card className="w-full h-full min-h-[260px]">
             <CardHeader>
               <CardTitle>Utilities & Nearby Amenities</CardTitle>
             </CardHeader>
