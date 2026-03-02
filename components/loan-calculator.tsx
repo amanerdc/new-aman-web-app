@@ -81,6 +81,24 @@ export function LoanCalculator() {
   const [showPrivacyShield, setShowPrivacyShield] = useState<boolean>(false)
   const shieldTimerRef = useRef<number | null>(null)
 
+  const normalizeMediaValue = (value: string): string => {
+    let normalized = value.trim().replace(/&amp;/gi, "&")
+
+    // Some records/links may already be encoded once (or twice).
+    for (let i = 0; i < 2; i += 1) {
+      if (!normalized.includes("%")) break
+      try {
+        const decoded = decodeURIComponent(normalized)
+        if (decoded === normalized) break
+        normalized = decoded
+      } catch {
+        break
+      }
+    }
+
+    return normalized
+  }
+
   // Pre-fill from URL params
   useEffect(() => {
     const priceParam = searchParams.get("price")
@@ -99,26 +117,21 @@ export function LoanCalculator() {
     }
     if (unitParam) {
       setUnitName(unitParam)
-      if (unitImageParam) {
-        let decodedImage = unitImageParam
-        try {
-          decodedImage = decodeURIComponent(unitImageParam)
-        } catch {
-          // URLSearchParams already decodes values; keep original if decoding fails.
-          decodedImage = unitImageParam
-        }
-        setUnitMedia(decodedImage)
-        setUnitImageForExport(toImagePreviewUrl(decodedImage))
-      } else {
+    }
+
+    if (unitImageParam) {
+      const normalizedImage = normalizeMediaValue(unitImageParam)
+      setUnitMedia(normalizedImage)
+      setUnitImageForExport(toImagePreviewUrl(normalizedImage) || normalizedImage)
+    } else if (unitParam) {
         const unitData = findUnitByDisplayName(unitParam)
         if (unitData) {
           setUnitMedia(unitData.unit.imageUrl)
-          setUnitImageForExport(toImagePreviewUrl(unitData.unit.imageUrl))
+          setUnitImageForExport(toImagePreviewUrl(unitData.unit.imageUrl) || unitData.unit.imageUrl)
           if (typeof unitData.unit.isRFO === "boolean") {
             setIsRfo(unitData.unit.isRFO)
           }
         }
-      }
     }
     if (optionParam && propertyOptions.some((opt) => opt.value === optionParam)) {
       setPropertyOption(optionParam)
@@ -713,7 +726,8 @@ export function LoanCalculator() {
       })
     } catch (error) {
       console.error('Error converting image to data URL:', error)
-      return ''
+      // Fallback to the original URL so exports still have a chance to render.
+      return url
     }
   }
 

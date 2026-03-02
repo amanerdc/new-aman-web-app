@@ -45,6 +45,10 @@ export default async function UnitDetailPage({
   }
 
   const specifications = series.specifications
+  const features = (unit.features || []).filter((feature: any) => {
+    if (typeof feature === "string") return feature.trim().length > 0
+    return Boolean(feature)
+  })
   const floorPlanHref = toFloorPlanPdfUrl(unit.floor_plan_pdf_id)
   const walkthroughEmbedUrl = toEmbeddableVideoUrl(unit.walkthrough)
   const walkthroughValue = unit.walkthrough?.trim() ?? ""
@@ -183,7 +187,7 @@ export default async function UnitDetailPage({
         {/* Features and Specifications */}
         <div className="grid gap-6 lg:grid-cols-2 mb-8 justify-center">
           {/* Features */}
-          <Card className="min-h-full">
+          <Card className="min-h-[260px]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
@@ -191,19 +195,23 @@ export default async function UnitDetailPage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
-                {(unit.features || []).map((feature: any, index: number) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">{typeof feature === 'string' ? feature : feature}</span>
-                  </li>
-                ))}
-              </ul>
+              {features.length > 0 ? (
+                <ul className="space-y-2">
+                  {features.map((feature: any, index: number) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span className="text-sm">{typeof feature === "string" ? feature : String(feature)}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">No data available.</p>
+              )}
             </CardContent>
           </Card>
 
           {/* Specifications */}
-          <Card className="min-h-full">
+          <Card className="min-h-[260px]">
             <CardHeader>
               <CardTitle>Construction Specifications</CardTitle>
             </CardHeader>
