@@ -52,6 +52,22 @@ export default async function LotDetailPage({
   const utilities = (lot.utilities || []).filter((utility: string) => utility?.trim().length > 0)
   const nearbyAmenities = (lot.nearbyAmenities || []).filter((amenity: string) => amenity?.trim().length > 0)
 
+  const formatLotArea = (value: number | string | null | undefined) => {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return `${value.toLocaleString("en-PH")} sqm`
+    }
+    if (typeof value === "string") {
+      const cleaned = value.replace(/[^0-9.]/g, "")
+      if (cleaned) {
+        const parsed = Number(cleaned)
+        if (Number.isFinite(parsed)) {
+          return `${parsed.toLocaleString("en-PH")} sqm`
+        }
+      }
+    }
+    return "No data available."
+  }
+
   return (
     <div className="py-8">
       {/* Hero Section */}
@@ -109,7 +125,7 @@ export default async function LotDetailPage({
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
                     <span className="text-muted-foreground">Lot Area</span>
-                    <span className="font-semibold">{lot.lotArea}</span>
+                    <span className="font-semibold">{formatLotArea(lot.lotArea)}</span>
                   </div>
 
                   <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
