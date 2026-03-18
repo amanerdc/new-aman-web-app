@@ -17,7 +17,7 @@ type LotOnly = {
   project: string
   developer: string
   status: string
-  lot_area: string
+  lot_area: number
   features: string[]
   reservation_fee: number
 }
