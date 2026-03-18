@@ -12,7 +12,7 @@ import { useState, useEffect } from 'react'
 const lotOnlySchema = z.object({
   id: z.string().min(1, 'ID is required').min(3, 'ID must be at least 3 characters'),
   name: z.string().min(1, 'Name is required').min(2, 'Name must be at least 2 characters'),
-  lot_area: z.string().min(1, 'Lot Area is required'),
+  lot_area: z.number().min(0, 'Lot Area must be a positive number'),
   description: z.string().optional(),
   price: z.number().min(0, 'Price must be a positive number').nullable().optional(),
   property_option: z.enum(['nur_lot_only', 'palm_lot_only', 'pvv_p2_lot_only',  'pvv_p3_lot_only', 'pv_ev_lot_only'], { message: 'Please select a valid property option' }).optional(),
