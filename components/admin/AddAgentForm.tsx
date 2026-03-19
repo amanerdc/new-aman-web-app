@@ -9,40 +9,91 @@ import { Label } from '@/components/ui/label'
 import { useState, useEffect } from 'react'
 
 const agentSchema = z.object({
-  id: z.string().min(1, 'ID is required'),
+  id: z.string().optional(),
   name: z.string().min(1, 'Name is required'),
-  brokerage: z.string().min(1, 'Brokerage is required'),
+  brokerage_id: z.string().min(1, 'Brokerage is required'),
   classification: z.enum(['Broker', 'Salesperson']),
-  team: z.string().min(1, 'Team is required'),
+  email: z.string().email('Valid email is required').or(z.literal('')),
+  contact_no: z.string().optional().default(''),
 })
 
 type AgentFormData = z.infer<typeof agentSchema>
 
+type Brokerage = {
+  id: string
+  name: string
+  team: string
+}
+
 interface AddAgentFormProps {
   onSuccess?: () => void
-  editingAgent?: AgentFormData | null
+  editingAgent?: {
+    id: string
+    name: string
+    brokerage_id: string
+    classification: 'Broker' | 'Salesperson'
+    email: string
+    contact_no: string
+  } | null
   onCancelEdit?: () => void
 }
 
 export function AddAgentForm({ onSuccess, editingAgent, onCancelEdit }: AddAgentFormProps) {
-  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<AgentFormData>({
+  const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<AgentFormData>({
     resolver: zodResolver(agentSchema),
     defaultValues: editingAgent || {},
   })
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [brokerages, setBrokerages] = useState<Brokerage[]>([])
+  const [nextAgentId, setNextAgentId] = useState<string>('')
+  
+  const brokerageId = watch('brokerage_id')
+
+  useEffect(() => {
+    fetchBrokerages()
+  }, [])
+
+  useEffect(() => {
+    if (brokerageId && !editingAgent) {
+      generateNextAgentId(brokerageId)
+    }
+  }, [brokerageId, editingAgent])
 
   useEffect(() => {
     if (editingAgent) {
-      setValue('id', editingAgent.id)
+      setValue('id', editingAgent.id || '')
       setValue('name', editingAgent.name)
-      setValue('brokerage', editingAgent.brokerage)
+      setValue('brokerage_id', editingAgent.brokerage_id)
       setValue('classification', editingAgent.classification)
-      setValue('team', editingAgent.team)
+      setValue('email', editingAgent.email || '')
+      setValue('contact_no', editingAgent.contact_no || '')
     } else {
       reset()
+      setNextAgentId('')
     }
   }, [editingAgent, setValue, reset])
+
+  const fetchBrokerages = async () => {
+    const response = await fetch('/api/brokers')
+    if (response.ok) {
+      const data = await response.json()
+      setBrokerages(data.sort((a: any, b: any) => a.team.localeCompare(b.team)))
+    }
+  }
+
+  const generateNextAgentId = async (brokerage_id: string) => {
+    try {
+      const response = await fetch(`/api/agents/next-id?brokerage_id=${brokerage_id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setNextAgentId(data.id)
+        setValue('id', data.id)
+      }
+    } catch (err) {
+      console.error('Error generating agent ID:', err)
+    }
+  }
 
   const onSubmit = async (data: AgentFormData) => {
     setLoading(true)
@@ -51,8 +102,6 @@ export function AddAgentForm({ onSuccess, editingAgent, onCancelEdit }: AddAgent
     const url = editingAgent ? `/api/agents/${editingAgent.id}` : '/api/agents'
     const method = editingAgent ? 'PUT' : 'POST'
 
-    console.log('Form submit - URL:', url, 'Method:', method, 'Data:', data)
-
     try {
       const response = await fetch(url, {
         method,
@@ -60,15 +109,12 @@ export function AddAgentForm({ onSuccess, editingAgent, onCancelEdit }: AddAgent
         body: JSON.stringify(data),
       })
 
-      console.log('Response status:', response.status, 'OK:', response.ok)
-
       if (response.ok) {
         setMessage({ type: 'success', text: editingAgent ? 'Agent updated successfully' : 'Agent added successfully' })
         reset()
         onSuccess?.()
       } else {
         const error = await response.json().catch(() => ({ error: 'Unknown error' }))
-        console.error('API error:', error)
         setMessage({ type: 'error', text: error.error || (editingAgent ? 'Error updating agent' : 'Error adding agent') })
       }
     } catch (err) {
@@ -81,8 +127,8 @@ export function AddAgentForm({ onSuccess, editingAgent, onCancelEdit }: AddAgent
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <Label htmlFor="id" className="mb-1">ID</Label>
-        <Input id="id" {...register('id')} disabled={!!editingAgent} />
+        <Label htmlFor="id" className="mb-1">Agent ID (Auto-generated)</Label>
+        <Input id="id" {...register('id')} disabled value={nextAgentId || ''} className="bg-gray-100" />
         {errors.id && <p className="text-red-500 text-sm">{errors.id.message}</p>}
       </div>
       <div>
@@ -91,9 +137,16 @@ export function AddAgentForm({ onSuccess, editingAgent, onCancelEdit }: AddAgent
         {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
       </div>
       <div>
-        <Label htmlFor="brokerage" className="mb-1">Brokerage</Label>
-        <Input id="brokerage" {...register('brokerage')} />
-        {errors.brokerage && <p className="text-red-500 text-sm">{errors.brokerage.message}</p>}
+        <Label htmlFor="brokerage_id" className="mb-1">Brokerage</Label>
+        <select id="brokerage_id" {...register('brokerage_id')} className="border rounded p-2 w-full">
+          <option value="">Select Brokerage</option>
+          {brokerages.map((brokerage) => (
+            <option key={brokerage.id} value={brokerage.id}>
+              {brokerage.name} ({brokerage.id})
+            </option>
+          ))}
+        </select>
+        {errors.brokerage_id && <p className="text-red-500 text-sm">{errors.brokerage_id.message}</p>}
       </div>
       <div>
         <Label htmlFor="classification" className="mb-1">Classification</Label>
@@ -105,9 +158,14 @@ export function AddAgentForm({ onSuccess, editingAgent, onCancelEdit }: AddAgent
         {errors.classification && <p className="text-red-500 text-sm">{errors.classification.message}</p>}
       </div>
       <div>
-        <Label htmlFor="team" className="mb-1">Team</Label>
-        <Input id="team" {...register('team')} />
-        {errors.team && <p className="text-red-500 text-sm">{errors.team.message}</p>}
+        <Label htmlFor="email" className="mb-1">Email</Label>
+        <Input id="email" type="email" {...register('email')} />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+      </div>
+      <div>
+        <Label htmlFor="contact_no" className="mb-1">Contact Number</Label>
+        <Input id="contact_no" {...register('contact_no')} />
+        {errors.contact_no && <p className="text-red-500 text-sm">{errors.contact_no.message}</p>}
       </div>
       {message && (
         <p className={`text-sm ${message.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>

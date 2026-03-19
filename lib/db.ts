@@ -162,7 +162,15 @@ export async function getLotOnlyById(id: string) {
 function transformAgent(data: any) {
   return {
     ...data,
-    imageUrl: data.image_url || data.imageUrl,
+    brokerageId: data.brokerage_id || data.brokerageId,
+    contactNo: data.contact_no || data.contactNo,
+  }
+}
+
+// Transform brokerages data
+function transformBrokerage(data: any) {
+  return {
+    ...data,
   }
 }
 
@@ -171,6 +179,90 @@ function transformDeveloper(data: any) {
   return {
     ...data,
     imageUrl: data.image_url || data.imageUrl,
+  }
+}
+
+export async function getBrokerages() {
+  try {
+    const { data, error } = await supabase.from('brokerages').select('*').order('team', { ascending: true })
+    if (error) {
+      console.error('Error fetching brokerages:', error.message || JSON.stringify(error))
+      return []
+    }
+    return (data || []).map(transformBrokerage)
+  } catch (err) {
+    console.error('Error fetching brokerages:', err)
+    return []
+  }
+}
+
+export async function getBrokerageById(id: string) {
+  try {
+    const { data, error } = await supabase.from('brokerages').select('*').eq('id', id).single()
+    if (error) {
+      console.error('Error fetching brokerage:', error.message || JSON.stringify(error))
+      return null
+    }
+    return data ? transformBrokerage(data) : null
+  } catch (err) {
+    console.error('Error fetching brokerage:', err)
+    return null
+  }
+}
+
+export async function createBrokerage(brokerage: any) {
+  try {
+    const { data, error } = await supabase.from('brokerages').insert([brokerage]).select().single()
+    if (error) {
+      console.error('Error creating brokerage:', error.message || JSON.stringify(error))
+      return null
+    }
+    return data ? transformBrokerage(data) : null
+  } catch (err) {
+    console.error('Error creating brokerage:', err)
+    return null
+  }
+}
+
+export async function updateBrokerage(id: string, updates: any) {
+  try {
+    const { data, error } = await supabase.from('brokerages').update(updates).eq('id', id).select().single()
+    if (error) {
+      console.error('Error updating brokerage:', error.message || JSON.stringify(error))
+      return null
+    }
+    return data ? transformBrokerage(data) : null
+  } catch (err) {
+    console.error('Error updating brokerage:', err)
+    return null
+  }
+}
+
+export async function deleteBrokerage(id: string) {
+  try {
+    const { error } = await supabase.from('brokerages').delete().eq('id', id)
+    if (error) {
+      console.error('Error deleting brokerage:', error.message || JSON.stringify(error))
+      return false
+    }
+    return true
+  } catch (err) {
+    console.error('Error deleting brokerage:', err)
+    return false
+  }
+}
+
+export async function getAgentCountInBrokerage(brokerage_id: string) {
+  try {
+    const { count, error } = await supabase.from('agents').select('*', { count: 'exact', head: false }).eq('brokerage_id', brokerage_id)
+    if (error) {
+      console.error('Error getting agent count:', error.message || JSON.stringify(error))
+      return 0
+    }
+    return count || 0
+  } catch (err) {
+    console.error('Error getting agent count:', err)
+    return 0
   }
 }
 
