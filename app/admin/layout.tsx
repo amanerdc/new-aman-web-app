@@ -68,7 +68,7 @@ export default function AdminLayout({
           <aside
             className={`${
               sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            } lg:translate-x-0 transition-transform duration-300 w-64 bg-white shadow-lg fixed lg:relative h-full z-40 flex flex-col`}
+            } lg:translate-x-0 transition-transform duration-300 w-64 bg-white shadow-lg fixed lg:relative h-screen z-40 flex flex-col overflow-y-auto`}
           >
             <div className="p-6">
               <h2 className="text-2xl font-bold text-primary">Admin Panel</h2>
@@ -121,7 +121,7 @@ export default function AdminLayout({
       )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-y-auto">
         <div className="p-8">
           {children}
         </div>

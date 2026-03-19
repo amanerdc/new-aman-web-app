@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { AddAgentForm } from '@/components/admin/AddAgentForm'
 import { ProtectedRoute } from '@/components/admin/ProtectedRoute'
 import { Pagination } from '@/components/admin/Pagination'
@@ -24,6 +24,7 @@ type Brokerage = {
 }
 
 const ITEMS_PER_PAGE = 15
+const STORAGE_KEY = 'admin_agents_filters'
 
 function AgentsPageContent() {
   const [agents, setAgents] = useState<Agent[]>([])
@@ -36,6 +37,27 @@ function AgentsPageContent() {
   const [editingAgent, setEditingAgent] = useState<Agent | null>(null)
   const [viewingAgent, setViewingAgent] = useState<Agent | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const formRef = useRef<HTMLDivElement>(null)
+
+  // Load cached filters from localStorage
+  useEffect(() => {
+    const cached = localStorage.getItem(STORAGE_KEY)
+    if (cached) {
+      try {
+        const { searchTerm: cachedSearch, teamFilter: cachedTeam, brokerageFilter: cachedBrokerage } = JSON.parse(cached)
+        setSearchTerm(cachedSearch || '')
+        setTeamFilter(cachedTeam || 'all')
+        setBrokerageFilter(cachedBrokerage || 'all')
+      } catch (err) {
+        console.error('Error loading cached filters:', err)
+      }
+    }
+  }, [])
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ searchTerm, teamFilter, brokerageFilter }))
+  }, [searchTerm, teamFilter, brokerageFilter])
 
   useEffect(() => {
     fetchAgents()
@@ -68,6 +90,14 @@ function AgentsPageContent() {
     return brokerages.find((b) => b.id === brokerageId)?.team || ''
   }
 
+  // Get brokerages filtered by team
+  const getFilteredBrokerages = () => {
+    if (teamFilter === 'all') {
+      return brokerages
+    }
+    return brokerages.filter((b) => b.team === teamFilter)
+  }
+
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this agent?')) return
     const response = await fetch(`/api/agents/${id}`, { method: 'DELETE' })
@@ -81,6 +111,14 @@ function AgentsPageContent() {
     setShowAddForm(false)
     fetchAgents()
     setCurrentPage(1)
+  }
+
+  const handleEditClick = (agent: Agent) => {
+    setEditingAgent(agent)
+    setShowAddForm(true)
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 0)
   }
 
   const filteredAgents = agents.filter((agent) => {
@@ -110,7 +148,7 @@ function AgentsPageContent() {
 
       {/* Add/Edit Form Modal */}
       {showAddForm && (
-        <div className="mb-6 p-6 bg-white rounded-lg shadow border-l-4 border-primary">
+        <div ref={formRef} className="mb-6 p-6 bg-white rounded-lg shadow border-l-4 border-primary">
           <h2 className="text-xl font-semibold mb-4">
             {editingAgent ? 'Edit Agent' : 'Add New Agent'}
           </h2>
@@ -182,6 +220,7 @@ function AgentsPageContent() {
                 value={teamFilter}
                 onChange={(e) => {
                   setTeamFilter(e.target.value as any)
+                  setBrokerageFilter('all')
                   setCurrentPage(1)
                 }}
                 className="border rounded p-2 w-full"
@@ -203,7 +242,7 @@ function AgentsPageContent() {
                 className="border rounded p-2 w-full"
               >
                 <option value="all">All Brokerages</option>
-                {brokerages.map((brokerage) => (
+                {getFilteredBrokerages().map((brokerage) => (
                   <option key={brokerage.id} value={brokerage.id}>
                     {brokerage.name}
                   </option>
@@ -257,10 +296,7 @@ function AgentsPageContent() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => {
-                            setEditingAgent(agent)
-                            setShowAddForm(true)
-                          }}
+                          onClick={() => handleEditClick(agent)}
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
